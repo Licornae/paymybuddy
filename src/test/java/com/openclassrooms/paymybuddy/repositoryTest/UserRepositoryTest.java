@@ -51,4 +51,25 @@ public class UserRepositoryTest {
         assertThat(saved.getIdUser()).isGreaterThan(0);
     }
 
+    @Test
+    public void shouldNotAllowDuplicateEmail() {
+        AppUser user1 = new AppUser();
+        user1.setUsername("user1");
+        user1.setEmail("duplicate@mail.com");
+        user1.setPassword("password");
+        user1.setRole("USER");
+
+        AppUser user2 = new AppUser();
+        user2.setUsername("user2");
+        user2.setEmail("duplicate@mail.com");
+        user2.setPassword("password");
+        user2.setRole("USER");
+
+        userRepository.save(user1);
+
+        assertThatThrownBy(() -> userRepository.save(user2))
+                .isInstanceOf(Exception.class);
+    }
+
+
 }
