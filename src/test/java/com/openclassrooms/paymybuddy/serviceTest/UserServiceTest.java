@@ -2,6 +2,7 @@ package com.openclassrooms.paymybuddy.serviceTest;
 
 import com.openclassrooms.paymybuddy.model.AppUser;
 import com.openclassrooms.paymybuddy.repository.UserRepository;
+import com.openclassrooms.paymybuddy.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
