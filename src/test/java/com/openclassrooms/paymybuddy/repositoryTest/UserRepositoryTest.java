@@ -30,4 +30,11 @@ public class UserRepositoryTest {
         assertThat(found).isNotNull();
         assertThat(found.getEmail()).isEqualTo("test@mail.com");
     }
+
+    @Test
+    public void shouldReturnNullWhenEmailNotFound() {
+        AppUser found = userRepository.findByEmail("unknown@mail.com");
+
+        assertThat(found).isNull();
+    }
 }
