@@ -37,4 +37,18 @@ public class UserRepositoryTest {
 
         assertThat(found).isNull();
     }
+
+    @Test
+    public void shouldGenerateIdWhenSavingUser() {
+        AppUser user = new AppUser();
+        user.setUsername("iduser");
+        user.setEmail("id@mail.com");
+        user.setPassword("password");
+        user.setRole("USER");
+
+        AppUser saved = userRepository.save(user);
+
+        assertThat(saved.getIdUser()).isGreaterThan(0);
+    }
+
 }
