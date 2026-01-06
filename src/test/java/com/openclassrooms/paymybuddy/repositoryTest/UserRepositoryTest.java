@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-;import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -71,5 +71,24 @@ public class UserRepositoryTest {
                 .isInstanceOf(Exception.class);
     }
 
+    @Test
+    public void shouldNotAllowDuplicateUser() {
+        AppUser user1 = new AppUser();
+        user1.setUsername("user");
+        user1.setEmail("user@mail.com");
+        user1.setPassword("password");
+        user1.setRole("USER");
+
+        AppUser user2 = new AppUser();
+        user2.setUsername("user");
+        user2.setEmail("user1@mail.com");
+        user2.setPassword("password");
+        user2.setRole("USER");
+
+        userRepository.save(user1);
+
+        assertThatThrownBy(() -> userRepository.save(user2))
+                .isInstanceOf(Exception.class);
+    }
 
 }
