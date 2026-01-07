@@ -1,5 +1,6 @@
 package com.openclassrooms.paymybuddy.repository;
 
+import com.openclassrooms.paymybuddy.model.AppUser;
 import com.openclassrooms.paymybuddy.model.Connection;
 import com.openclassrooms.paymybuddy.model.ConnectionId;
 import org.springframework.data.repository.CrudRepository;
@@ -14,4 +15,6 @@ import org.springframework.data.repository.CrudRepository;
  * {@code user} and the {@code friend}.
  */
 public interface ConnectionRepository extends CrudRepository<Connection, ConnectionId> {
+
+    boolean existsByUserAndFriend(AppUser user, AppUser friend);
 }
