@@ -26,8 +26,8 @@ public class UserServiceTest {
         AppUser existingUser = new AppUser();
         existingUser.setEmail("test@mail.com");
 
-        when(userRepository.findByEmail("test@mail.com"))
-                .thenReturn(existingUser);
+        when(userRepository.existsByEmail("test@mail.com"))
+                .thenReturn(true);
 
         AppUser newUser = new AppUser();
         newUser.setUsername("newuser");
@@ -50,8 +50,8 @@ public class UserServiceTest {
         AppUser existingUser = new AppUser();
         existingUser.setUsername("existingUser");
 
-        when(userRepository.findByUsername("existingUser"))
-                .thenReturn(existingUser);
+        when(userRepository.existsByUsername("existingUser"))
+                .thenReturn(true);
 
         AppUser newUser = new AppUser();
         newUser.setUsername("existingUser");

@@ -91,4 +91,33 @@ public class UserRepositoryTest {
                 .isInstanceOf(Exception.class);
     }
 
+    @Test
+    public void shouldReturnTrueWhenEmailExists() {
+
+        AppUser user = new AppUser();
+        user.setUsername("exists");
+        user.setEmail("exists@mail.com");
+        user.setPassword("password");
+        user.setRole("USER");
+
+        userRepository.save(user);
+
+        assertThat(userRepository.existsByEmail("exists@mail.com")).isTrue();
+    }
+
+    @Test
+    public void shouldReturnTrueWhenUsernameExists() {
+
+        AppUser user = new AppUser();
+        user.setUsername("exists");
+        user.setEmail("exists@mail.com");
+        user.setPassword("password");
+        user.setRole("USER");
+
+        userRepository.save(user);
+
+        assertThat(userRepository.existsByUsername("exists")).isTrue();
+    }
+
+
 }

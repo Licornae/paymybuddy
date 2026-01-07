@@ -30,12 +30,12 @@ public class UserService {
         log.info("Attempting to save user with email={} and username={}",
                 user.getEmail(), user.getUsername());
 
-        if (userRepository.findByEmail(user.getEmail()) != null){
+        if (userRepository.existsByEmail(user.getEmail())){
             log.warn("Email already exists: {}", user.getEmail());
             throw new IllegalArgumentException("Email already exists");
         }
 
-        if (userRepository.findByUsername(user.getUsername()) != null){
+        if (userRepository.existsByUsername(user.getUsername())){
             log.warn("Username already exists: {}", user.getUsername());
             throw new IllegalArgumentException("Username already exists");
         }
