@@ -1,5 +1,6 @@
 package com.openclassrooms.paymybuddy.service;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.openclassrooms.paymybuddy.repository.UserRepository;
@@ -13,6 +14,7 @@ import com.openclassrooms.paymybuddy.model.AppUser;
  */
 @Slf4j
 @Service
+@Transactional //Le service est transactionnel afin de garantir l’atomicité des règles métier avant la persistance.
 public class UserService {
 
     @Autowired
@@ -26,6 +28,10 @@ public class UserService {
      * @throws IllegalArgumentException if email or username already exists
      */
     public AppUser saveUser(AppUser user) {
+
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
 
         log.info("Attempting to save user with email={} and username={}",
                 user.getEmail(), user.getUsername());

@@ -21,6 +21,25 @@ public class UserServiceTest {
     private UserService userService;
 
     @Test
+    public void shouldSaveUserWhenValid() {
+
+        AppUser user = new AppUser();
+        user.setUsername("valid");
+        user.setEmail("valid@mail.com");
+        user.setPassword("password");
+        user.setRole("USER");
+
+        when(userRepository.existsByEmail(any())).thenReturn(false);
+        when(userRepository.existsByUsername(any())).thenReturn(false);
+        when(userRepository.save(any())).thenReturn(user);
+
+        AppUser saved = userService.saveUser(user);
+
+        assertThat(saved).isNotNull();
+        verify(userRepository).save(user);
+    }
+
+    @Test
     public void shouldThrowExceptionWhenEmailAlreadyExists() {
 
         AppUser existingUser = new AppUser();

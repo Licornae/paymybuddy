@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
  * by email or username.
  */
 @Repository
-public interface UserRepository extends JpaRepository<AppUser,Integer> {
+public interface UserRepository extends CrudRepository<AppUser,Integer> {
 
     /**
      * Finds a user by email.
