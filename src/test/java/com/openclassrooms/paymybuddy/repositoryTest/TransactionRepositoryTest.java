@@ -1,11 +1,16 @@
 package com.openclassrooms.paymybuddy.repositoryTest;
 
 import com.openclassrooms.paymybuddy.model.AppUser;
+import com.openclassrooms.paymybuddy.model.Transaction;
+import com.openclassrooms.paymybuddy.repository.TransactionRepository;
 import com.openclassrooms.paymybuddy.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
@@ -39,7 +44,7 @@ public class TransactionRepositoryTest {
         Transaction transaction = new Transaction();
         transaction.setSender(sender);
         transaction.setReceiver(receiver);
-        transaction.setAmount(50.0);
+        transaction.setAmount(100.0);
         transaction.setDescription("Refund");
         transaction.setDateHeure(LocalDateTime.now());
 
