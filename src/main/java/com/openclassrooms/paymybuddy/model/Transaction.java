@@ -27,12 +27,11 @@ public class Transaction {
     @Column(name = "amount", nullable = false)
     private Double amount;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "sender_id")
     private AppUser sender;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "receiver_id")
     private AppUser receiver;
-
 }
