@@ -53,4 +53,47 @@ public class TransactionRepositoryTest {
         assertThat(saved.getIdTransaction()).isNotNull();
         assertThat(saved.getAmount()).isEqualTo(100.0);
     }
+
+    @Test
+    public void shouldNotSaveTransactionWithoutSender() {
+
+        AppUser receiver = new AppUser();
+        receiver.setUsername("receiver");
+        receiver.setEmail("receiver@mail.com");
+        receiver.setPassword("password");
+        receiver.setRole("USER");
+
+        userRepository.save(receiver);
+
+        Transaction transaction = new Transaction();
+        transaction.setReceiver(receiver);
+        transaction.setAmount(100.0);
+        transaction.setDescription("Refund");
+        transaction.setDateHeure(LocalDateTime.now());
+
+        assertThatThrownBy(() -> transactionRepository.save(transaction))
+                .isInstanceOf(Exception.class);
+    }
+
+    @Test
+    public void shouldNotSaveTransactionWithoutReceiver() {
+
+        AppUser sender = new AppUser();
+        sender.setUsername("sender");
+        sender.setEmail("sender@mail.com");
+        sender.setPassword("password");
+        sender.setRole("USER");
+
+        userRepository.save(sender);
+
+        Transaction transaction = new Transaction();
+        transaction.setSender(sender);
+        transaction.setAmount(100.0);
+        transaction.setDescription("Refund");
+        transaction.setDateHeure(LocalDateTime.now());
+
+        assertThatThrownBy(() -> transactionRepository.save(transaction))
+                .isInstanceOf(Exception.class);
+    }
+
 }
