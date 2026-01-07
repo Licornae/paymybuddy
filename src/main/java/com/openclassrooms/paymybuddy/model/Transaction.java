@@ -21,7 +21,7 @@ public class Transaction {
     @Column(name = "description", length = 200)
     private String description;
 
-    @Column(name = "date_heure")
+    @Column(name = "date_heure", nullable = false)
     private LocalDateTime dateHeure;
 
     @Column(name = "amount", nullable = false)
