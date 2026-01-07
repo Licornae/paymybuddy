@@ -6,7 +6,14 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 
-
+/**
+ * Entity representing a financial transaction between two users.
+ *
+ * A transaction records the transfer of an amount from a sender to a receiver
+ * at a specific date and time, with an optional description.
+ *
+ * This entity is mapped to the {@code transaction} table in the database.
+ */
 @DynamicUpdate
 @Data
 @Entity
