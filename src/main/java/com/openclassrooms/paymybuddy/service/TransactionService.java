@@ -6,6 +6,7 @@ import com.openclassrooms.paymybuddy.repository.ConnectionRepository;
 import com.openclassrooms.paymybuddy.repository.TransactionRepository;
 import com.openclassrooms.paymybuddy.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
  */
 @Transactional
 @Service
+@Slf4j
 public class TransactionService {
 
     @Autowired
@@ -56,21 +58,35 @@ public class TransactionService {
                                          double amount,
                                          String description) {
 
+        log.info("Attempting to create transaction: senderId={}, receiverId={}, amount={}",
+                senderId, receiverId, amount);
+
         if (amount <= 0) {
+            log.warn("Transaction rejected: invalid amount {}", amount);
             throw new IllegalArgumentException("Amount must be greater than zero");
         }
 
         if (senderId == receiverId) {
+            log.warn("Transaction rejected: sender and receiver are the same user (id={})",
+                    senderId);
             throw new IllegalArgumentException("Sender and receiver must be different");
         }
 
         AppUser sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
+                .orElseThrow(() -> {
+                    log.warn("Transaction rejected: sender not found (id={})", senderId);
+                    return new IllegalArgumentException("Sender not found");
+                });
 
         AppUser receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
+                .orElseThrow(() -> {
+                    log.warn("Transaction rejected: receiver not found (id={})", receiverId);
+                    return new IllegalArgumentException("Receiver not found");
+                });
 
         if (!connectionRepository.existsByUserAndFriend(sender, receiver)) {
+            log.warn("Transaction rejected: users not connected (senderId={}, receiverId={})",
+                    senderId, receiverId);
             throw new IllegalStateException("Users are not friends");
         }
 
@@ -81,6 +97,11 @@ public class TransactionService {
         transaction.setDescription(description);
         transaction.setDateHeure(LocalDateTime.now());
 
-        return transactionRepository.save(transaction);
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        log.info("Transaction successfully created: transactionId={}, senderId={}, receiverId={}, amount={}",
+                savedTransaction.getIdTransaction(), senderId, receiverId, amount);
+
+        return savedTransaction;
     }
 }
