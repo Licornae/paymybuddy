@@ -1,7 +1,5 @@
 package com.openclassrooms.paymybuddy.repositoryTest;
 
-import com.openclassrooms.paymybuddy.model.Connection;
-import com.openclassrooms.paymybuddy.repository.ConnectionRepository;
 import com.openclassrooms.paymybuddy.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
