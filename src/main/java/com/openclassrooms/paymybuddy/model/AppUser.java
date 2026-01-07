@@ -4,6 +4,12 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 
+/**
+ * Entity representing an application user.
+ *
+ * This class is mapped to the {@code app_user} table and contains
+ * authentication and identification information for a user.
+ */
 @DynamicUpdate
 @Data
 @Entity
@@ -26,5 +32,4 @@ public class AppUser {
 
     @Column(name = "role", nullable = false)
     private String role;
-
 }
