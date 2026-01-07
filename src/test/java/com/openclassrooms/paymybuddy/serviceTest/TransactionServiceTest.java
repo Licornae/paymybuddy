@@ -7,6 +7,7 @@ import com.openclassrooms.paymybuddy.repository.ConnectionRepository;
 import com.openclassrooms.paymybuddy.repository.TransactionRepository;
 import com.openclassrooms.paymybuddy.repository.UserRepository;
 import com.openclassrooms.paymybuddy.service.ConnectionService;
+import com.openclassrooms.paymybuddy.service.TransactionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,12 +50,8 @@ public class TransactionServiceTest {
         when(connectionRepository.existsByUserAndFriend(sender, receiver))
                 .thenReturn(true);
 
-        Transaction savedTransaction = new Transaction();
-        savedTransaction.setIdTransaction(1);
-        savedTransaction.setAmount(100.0);
-
         when(transactionRepository.save(any(Transaction.class)))
-                .thenReturn(savedTransaction);
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         Transaction result = transactionService.createTransaction(
                 1, 2, 100.0, "Refund"
@@ -112,6 +109,6 @@ public class TransactionServiceTest {
 
         assertThat(thrown)
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Users are not connected");
+                .hasMessage("Users are not friends");
     }
 }
