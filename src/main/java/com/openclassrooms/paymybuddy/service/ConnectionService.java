@@ -35,11 +35,18 @@ public class ConnectionService {
      */
     public void addConnection(AppUser user, AppUser friend) {
 
+        log.debug("Attempting to add connection: user={} friend={}",
+                user.getIdUser(), friend.getIdUser());
+
         if (user.equals(friend)) {
+            log.warn("User {} attempted to add themselves as a friend",
+                    user.getIdUser());
             throw new IllegalArgumentException("Cannot add yourself as a friend");
         }
 
         if (connectionRepository.existsByUserAndFriend(user, friend)) {
+            log.warn("Duplicate connection attempt: user={} friend={}",
+                    user.getIdUser(), friend.getIdUser());
             throw new IllegalArgumentException("Connection already exists");
         }
 
@@ -48,5 +55,7 @@ public class ConnectionService {
         connection.setFriend(friend);
 
         connectionRepository.save(connection);
+        log.info("Connection successfully created: user={} friend={}",
+                user.getIdUser(), friend.getIdUser());
     }
 }
