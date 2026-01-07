@@ -5,11 +5,26 @@ import com.openclassrooms.paymybuddy.model.Transaction;
 import com.openclassrooms.paymybuddy.repository.ConnectionRepository;
 import com.openclassrooms.paymybuddy.repository.TransactionRepository;
 import com.openclassrooms.paymybuddy.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+/**
+ * Service layer responsible for handling money transfer transactions between users.
+ *
+ * This service centralizes all business rules related to transactions, including:
+ * - Validation of transaction amount
+ * - Validation of sender and receiver existence
+ * - Prevention of self-transfers
+ * - Verification of friendship (connection) between users
+ * - Creation and persistence of transactions
+ *
+ * All validations are performed before persisting data to ensure data integrity
+ * and business consistency.
+ */
+@Transactional
 @Service
 public class TransactionService {
 
@@ -22,6 +37,20 @@ public class TransactionService {
     @Autowired
     ConnectionRepository connectionRepository;
 
+    /**
+     * Creates and persists a new transaction between two connected users.
+     *
+     * @param senderId    the unique identifier of the user sending the money
+     * @param receiverId  the unique identifier of the user receiving the money
+     * @param amount      the amount of money to transfer
+     * @param description a textual description of the transaction
+     *
+     * @return the persisted {@link Transaction} entity
+     *
+     * @throws IllegalArgumentException if the amount is not valid, if users are identical,
+     *                                  or if one of the users does not exist
+     * @throws IllegalStateException    if the users are not connected as friends
+     */
     public Transaction createTransaction(int senderId,
                                          int receiverId,
                                          double amount,
