@@ -5,12 +5,15 @@ import com.openclassrooms.paymybuddy.repository.UserRepository;
 import com.openclassrooms.paymybuddy.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -114,5 +117,35 @@ public class UserServiceTest {
         assertThat(saved.getPassword()).isNotEqualTo("Password");
 
         assertThat(passwordEncoder.matches("Password", saved.getPassword())).isTrue();
+    }
+
+    @Test
+    public void should_register_user_with_encoded_password() {
+
+        String email = "user@test.com";
+        String rawPassword = "password";
+
+        when(userRepository.findByEmail(email)).thenReturn(null);
+        when(passwordEncoder.encode(rawPassword)).thenReturn("encodedPassword");
+
+        userService.registerUser(email, rawPassword);
+
+        ArgumentCaptor<AppUser> captor = ArgumentCaptor.forClass(AppUser.class);
+        verify(userRepository).save(captor.capture());
+
+        AppUser savedUser = captor.getValue();
+        assertEquals(email, savedUser.getEmail());
+        assertEquals("encodedPassword", savedUser.getPassword());
+        assertEquals("USER", savedUser.getRole());
+    }
+
+    @Test
+    public void should_throw_exception_if_email_already_exists() {
+
+        when(userRepository.findByEmail("user@test.com")).thenReturn(new AppUser());
+
+        assertThrows(IllegalArgumentException.class, () -> userService.registerUser("user@test.com", "password"));
+
+        verify(userRepository, never()).save(any());
     }
 }
