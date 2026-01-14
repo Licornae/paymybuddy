@@ -122,18 +122,22 @@ public class UserServiceTest {
     @Test
     public void shouldRegisterUserWithEncodedPassword() {
 
+        String username = "User";
         String email = "user@test.com";
         String rawPassword = "password";
 
         when(userRepository.findByEmail(email)).thenReturn(null);
+        when(userRepository.findByUsername(username)).thenReturn(null);
+
         when(passwordEncoder.encode(rawPassword)).thenReturn("encodedPassword");
 
-        userService.registerUser(email, rawPassword);
+        userService.registerUser(username, email, rawPassword);
 
         ArgumentCaptor<AppUser> captor = ArgumentCaptor.forClass(AppUser.class);
         verify(userRepository).save(captor.capture());
 
         AppUser savedUser = captor.getValue();
+        assertEquals(username, savedUser.getUsername());
         assertEquals(email, savedUser.getEmail());
         assertEquals("encodedPassword", savedUser.getPassword());
         assertEquals("USER", savedUser.getRole());

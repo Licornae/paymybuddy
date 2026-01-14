@@ -6,7 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.AssertionErrors;
+
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -119,5 +122,16 @@ public class UserRepositoryTest {
         assertThat(userRepository.existsByUsername("exists")).isTrue();
     }
 
+    @Test
+    public void shouldFindUserByEmail() {
 
+        AppUser user = new AppUser();
+        user.setEmail("user@test.com");
+        user.setPassword("password");
+
+        userRepository.save(user);
+
+        AppUser found = userRepository.findByEmail("user@test.com");
+        assertNotNull(found);
+    }
 }
