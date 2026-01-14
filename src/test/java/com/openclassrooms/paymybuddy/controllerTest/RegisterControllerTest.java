@@ -31,10 +31,11 @@ public class RegisterControllerTest {
     @Test
     public void shouldRegisterUserAndRedirectToLogin() throws Exception {
         mockMvc.perform(post("/register")
+                        .param("username", "User")
                         .param("email", "user@test.com")
                         .param("password", "password"))
                 .andExpect(redirectedUrl("/login"));
 
-        verify(userService).registerUser("user@test.com", "password");
+        verify(userService).registerUser("User", "user@test.com", "password");
     }
 }

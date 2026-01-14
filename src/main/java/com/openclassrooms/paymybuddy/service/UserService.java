@@ -57,4 +57,23 @@ public class UserService {
 
         return savedUser;
     }
+
+    public void registerUser(String username, String email, String password){
+
+        if (userRepository.findByUsername(username) != null) {
+            throw new IllegalArgumentException("username déjà utilisé");
+        }
+
+        if (userRepository.findByEmail(email) != null) {
+            throw new IllegalArgumentException("Email déjà utilisé");
+        }
+
+        AppUser user = new AppUser();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole("USER");
+
+        userRepository.save(user);
+    }
 }
