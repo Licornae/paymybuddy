@@ -87,4 +87,24 @@ public class UserServiceTest {
         verify(userRepository, never()).save(any());
     }
 
+    @Test
+    public void shouldEncodePasswordBeforeSavingUser() {
+
+        AppUser user = new AppUser();
+        user.setUsername("User");
+        user.setEmail("secure@mail.com");
+        user.setPassword("Password");
+        user.setRole("USER");
+
+        when(userRepository.existsByEmail(any())).thenReturn(false);
+        when(userRepository.existsByUsername(any())).thenReturn(false);
+
+        when(userRepository.save(any())).thenReturn(user);
+
+        AppUser saved = userService.saveUser(user);
+
+        assertThat(saved.getPassword()).isNotEqualTo("Password");
+
+        assertThat(passwordEncoder.matches("Password", saved.getPassword())).isTrue();
+    }
 }
