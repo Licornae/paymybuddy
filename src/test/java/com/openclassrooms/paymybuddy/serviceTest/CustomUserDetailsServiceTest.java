@@ -1,5 +1,6 @@
 package com.openclassrooms.paymybuddy.serviceTest;
 
+import com.openclassrooms.paymybuddy.configuration.CustomUserDetailsService;
 import com.openclassrooms.paymybuddy.model.AppUser;
 import com.openclassrooms.paymybuddy.repository.UserRepository;
 import org.junit.jupiter.api.Test;
