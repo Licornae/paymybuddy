@@ -20,9 +20,22 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        return http.authorizeHttpRequests(auth -> auth.requestMatchers("/register", "/css/**") // css/** pour permettre affichage
-                        .permitAll().anyRequest().authenticated())
-                .formLogin(Customizer.withDefaults()) // ✅ login automatique
+        return http
+                .csrf(csrf -> csrf.disable())
+
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/register", "/login", "/css/**").permitAll()
+                        .anyRequest().authenticated())
+
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/transfer", true)
+                        .permitAll())
+
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login"))
+
                 .build();
     }
 }
