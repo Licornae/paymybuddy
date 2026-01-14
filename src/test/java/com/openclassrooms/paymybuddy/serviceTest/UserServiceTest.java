@@ -120,7 +120,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void should_register_user_with_encoded_password() {
+    public void shouldRegisterUserWithEncodedPassword() {
 
         String email = "user@test.com";
         String rawPassword = "password";
@@ -140,7 +140,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void should_throw_exception_if_email_already_exists() {
+    public void shouldThrowExceptionIfEmailAlreadyExists() {
 
         when(userRepository.findByEmail("user@test.com")).thenReturn(new AppUser());
 
