@@ -2,6 +2,7 @@ package com.openclassrooms.paymybuddy.service;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.openclassrooms.paymybuddy.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     /**
      * Saves a new user after validating email and username uniqueness.
@@ -46,10 +50,11 @@ public class UserService {
             throw new IllegalArgumentException("Username already exists");
         }
 
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         AppUser savedUser = userRepository.save(user);
         log.info("User successfully saved with id={}", savedUser.getIdUser());
 
         return savedUser;
     }
-
 }
