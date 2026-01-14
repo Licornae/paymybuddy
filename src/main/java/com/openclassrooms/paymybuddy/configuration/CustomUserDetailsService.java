@@ -1,6 +1,7 @@
 package com.openclassrooms.paymybuddy.configuration;
 
 import com.openclassrooms.paymybuddy.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +24,7 @@ import java.util.List;
  * Spring Security conventions.
  */
 @Service
+@Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
@@ -40,11 +42,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
+        log.debug("Attempting to authenticate user with email={}", email);
+
         AppUser user = userRepository.findByEmail(email);
 
         if (user == null) {
+            log.warn("Authentication failed: user not found with email={}", email);
             throw new UsernameNotFoundException("User not found");
         }
+
+        log.info("User authenticated successfully with email={}", email);
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
