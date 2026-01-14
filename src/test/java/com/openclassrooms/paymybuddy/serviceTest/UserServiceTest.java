@@ -148,7 +148,7 @@ public class UserServiceTest {
 
         when(userRepository.findByEmail("user@test.com")).thenReturn(new AppUser());
 
-        assertThrows(IllegalArgumentException.class, () -> userService.registerUser("user@test.com", "password"));
+        assertThrows(IllegalArgumentException.class, () -> userService.registerUser("User","user@test.com", "password"));
 
         verify(userRepository, never()).save(any());
     }
