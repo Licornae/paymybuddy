@@ -76,9 +76,13 @@ public class ConnectionService {
      */
     public void addConnectionByEmail(AppUser user, String friendEmail) {
 
+        log.debug("Attempting to add connection by email: userId={}, email={}",
+                user.getIdUser(), friendEmail);
+
         AppUser friend = userRepository.findByEmail(friendEmail);
 
         if (friend == null) {
+            log.warn("Connection rejected: no user found with email={}", friendEmail);
             throw new IllegalArgumentException("User not found");
         }
 
