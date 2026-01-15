@@ -3,6 +3,7 @@ package com.openclassrooms.paymybuddy.service;
 import com.openclassrooms.paymybuddy.model.AppUser;
 import com.openclassrooms.paymybuddy.model.Connection;
 import com.openclassrooms.paymybuddy.repository.ConnectionRepository;
+import com.openclassrooms.paymybuddy.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ public class ConnectionService {
 
     @Autowired
     ConnectionRepository connectionRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     /**
      * Creates a new connection between two users.
@@ -57,5 +61,17 @@ public class ConnectionService {
         connectionRepository.save(connection);
         log.info("Connection successfully created: user={} friend={}",
                 user.getIdUser(), friend.getIdUser());
+    }
+
+
+    public void addConnectionByEmail(AppUser user, String friendEmail) {
+
+        AppUser friend = userRepository.findByEmail(friendEmail);
+
+        if (friend == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        addConnection(user, friend);
     }
 }
