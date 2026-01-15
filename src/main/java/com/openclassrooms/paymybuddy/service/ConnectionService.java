@@ -63,7 +63,17 @@ public class ConnectionService {
                 user.getIdUser(), friend.getIdUser());
     }
 
-
+    /**
+     * Adds a new connection using the friend's email address.
+     *
+     * This is the only method intended to be used by the controller layer.
+     * It retrieves the target user by email and delegates the creation
+     * of the connection to {@link #addConnection(AppUser, AppUser)}.
+     *
+     * @param user the authenticated user who adds a connection
+     * @param friendEmail the email address of the user to be added
+     * @throws IllegalArgumentException if no user is found with the given email
+     */
     public void addConnectionByEmail(AppUser user, String friendEmail) {
 
         AppUser friend = userRepository.findByEmail(friendEmail);
