@@ -44,12 +44,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         log.debug("Attempting to authenticate user with email={}", email);
 
-        AppUser user = userRepository.findByEmail(email);
-
-        if (user == null) {
+        AppUser user = userRepository.findByEmail(email).orElseThrow(() -> {
             log.warn("Authentication failed: user not found with email={}", email);
-            throw new UsernameNotFoundException("User not found");
-        }
+            return new UsernameNotFoundException("User not found");
+        });
 
         log.info("User authenticated successfully with email={}", email);
 

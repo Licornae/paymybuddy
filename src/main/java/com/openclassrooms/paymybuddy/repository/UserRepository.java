@@ -1,9 +1,10 @@
 package com.openclassrooms.paymybuddy.repository;
 
 import com.openclassrooms.paymybuddy.model.AppUser;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 /**
  * Repository interface for {@link AppUser} persistence operations.
@@ -20,7 +21,7 @@ public interface UserRepository extends CrudRepository<AppUser,Integer> {
      * @param email the email to search for
      * @return the matching user, or {@code null} if none found
      */
-    AppUser findByEmail(String email);
+    Optional<AppUser> findByEmail(String email);
 
     /**
      * Finds a user by username.

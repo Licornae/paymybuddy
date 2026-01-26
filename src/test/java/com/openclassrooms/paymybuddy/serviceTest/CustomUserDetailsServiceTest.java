@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -30,7 +32,7 @@ public class CustomUserDetailsServiceTest {
         user.setPassword("Password");
         user.setRole("USER");
 
-        when(userRepository.findByEmail("test@mail.com")).thenReturn(user);
+        when(userRepository.findByEmail("test@mail.com")).thenReturn(Optional.of(user));
 
         UserDetails details = customUserDetailsService.loadUserByUsername("test@mail.com");
 
