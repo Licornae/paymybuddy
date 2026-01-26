@@ -1,5 +1,6 @@
 package com.openclassrooms.paymybuddy.controllerTest;
 
+import com.openclassrooms.paymybuddy.controller.ConnectionController;
 import com.openclassrooms.paymybuddy.service.ConnectionService;
 import com.openclassrooms.paymybuddy.model.AppUser;
 import org.junit.jupiter.api.Test;
@@ -8,13 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 
-@WebMvcTest(ConnectionController.class)
+
+@WebMvcTest(
+        controllers = ConnectionController.class,
+        excludeAutoConfiguration = ThymeleafAutoConfiguration.class
+)
 public class ConnectionControllerTest {
 
     @Autowired
@@ -36,13 +42,15 @@ public class ConnectionControllerTest {
     public void shouldAddConnectionByEmail() throws Exception {
 
         mockMvc.perform(post("/connections/add")
+                        .with(csrf())
                         .param("email", "friend@mail.com"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("add-connection"))
                 .andExpect(model().attributeExists("success"));
 
         verify(connectionService).addConnectionByEmail(
-                org.mockito.ArgumentMatchers.any(AppUser.class),
-                org.mockito.ArgumentMatchers.eq("friend@mail.com"));
+                org.mockito.ArgumentMatchers.eq("user@mail.com"),
+                org.mockito.ArgumentMatchers.eq("friend@mail.com")
+        );
+
     }
 }

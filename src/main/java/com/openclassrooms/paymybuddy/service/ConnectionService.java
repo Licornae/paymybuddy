@@ -70,20 +70,38 @@ public class ConnectionService {
      * It retrieves the target user by email and delegates the creation
      * of the connection to {@link #addConnection(AppUser, AppUser)}.
      *
-     * @param user the authenticated user who adds a connection
+     * @param currentUserEmail the authenticated user who adds a connection
      * @param friendEmail the email address of the user to be added
      * @throws IllegalArgumentException if no user is found with the given email
      */
-    public void addConnectionByEmail(AppUser user, String friendEmail) {
+    public void addConnectionByEmail(String currentUserEmail, String friendEmail) {
+
+        //Charger l'utilisateur connecté DEPUIS LA BASE
+        AppUser user = userRepository.findByEmail(currentUserEmail)
+                .orElseThrow(() ->
+                        new IllegalStateException("Utilisateur connecté introuvable"));
 
         log.debug("Attempting to add connection by email: userId={}, email={}",
                 user.getIdUser(), friendEmail);
 
-        AppUser friend = userRepository.findByEmail(friendEmail).orElseThrow(() -> {
-            log.warn("Connection rejected: no user found with email={}", friendEmail);
-            return new IllegalArgumentException("User not found");
-        });
+        //Charger l'ami depuis la base
+        AppUser friend = userRepository.findByEmail(friendEmail)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Cet utilisateur n'est pas sur l'application"));
 
-        addConnection(user, friend);
+        if (user.equals(friend)) {
+            throw new IllegalArgumentException("Vous ne pouvez pas vous ajouter vous-même");
+        }
+
+        if (connectionRepository.existsByUserAndFriend(user, friend)) {
+            throw new IllegalArgumentException("Cette relation existe déjà");
+        }
+
+        //Création de la relation
+        Connection connection = new Connection();
+        connection.setUser(user);
+        connection.setFriend(friend);
+
+        connectionRepository.save(connection);
     }
 }

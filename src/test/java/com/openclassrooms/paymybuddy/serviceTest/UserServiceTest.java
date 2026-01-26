@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -126,10 +128,13 @@ public class UserServiceTest {
         String email = "user@test.com";
         String rawPassword = "password";
 
-        when(userRepository.findByEmail(email)).thenReturn(null);
-        when(userRepository.findByUsername(username)).thenReturn(null);
+        when(userRepository.findByEmail(email))
+                .thenReturn(Optional.empty());
+        when(userRepository.findByUsername(username))
+                .thenReturn(null);
 
-        when(passwordEncoder.encode(rawPassword)).thenReturn("encodedPassword");
+        when(passwordEncoder.encode(rawPassword))
+                .thenReturn("encodedPassword");
 
         userService.registerUser(username, email, rawPassword);
 
@@ -146,7 +151,7 @@ public class UserServiceTest {
     @Test
     public void shouldThrowExceptionIfEmailAlreadyExists() {
 
-        when(userRepository.findByEmail("user@test.com")).thenReturn(new AppUser());
+        when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(new AppUser()));
 
         assertThrows(IllegalArgumentException.class, () -> userService.registerUser("User","user@test.com", "password"));
 

@@ -64,7 +64,7 @@ public class UserService {
             throw new IllegalArgumentException("username déjà utilisé");
         }
 
-        if (userRepository.findByEmail(email) != null) {
+        if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Email déjà utilisé");
         }
 

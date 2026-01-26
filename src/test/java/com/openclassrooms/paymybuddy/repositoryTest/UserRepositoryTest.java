@@ -6,10 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.util.AssertionErrors;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -28,17 +27,17 @@ public class UserRepositoryTest {
 
         userRepository.save(user);
 
-        AppUser found = userRepository.findByEmail("test@mail.com");
+        Optional<AppUser> found = userRepository.findByEmail("test@mail.com");
 
-        assertThat(found).isNotNull();
-        assertThat(found.getEmail()).isEqualTo("test@mail.com");
+        assertThat(found).isPresent();
+        assertThat(found.get().getEmail()).isEqualTo("test@mail.com");
     }
 
     @Test
     public void shouldReturnNullWhenEmailNotFound() {
-        AppUser found = userRepository.findByEmail("unknown@mail.com");
+        Optional<AppUser> found = userRepository.findByEmail("unknown@mail.com");
 
-        assertThat(found).isNull();
+        assertThat(found).isEmpty();
     }
 
     @Test

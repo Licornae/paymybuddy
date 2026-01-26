@@ -90,13 +90,19 @@ public class ConnectionServiceTest {
         user.setIdUser(1);
         user.setEmail("user@mail.com");
 
-        when(userRepository.findByEmail("friend@mail.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("user@mail.com"))
+                .thenReturn(Optional.of(user));
 
-        Throwable thrown = catchThrowable(() -> connectionService.addConnectionByEmail(user, "friend@mail.com"));
+        when(userRepository.findByEmail("friend@mail.com"))
+                .thenReturn(Optional.empty());
+
+        Throwable thrown = catchThrowable(() ->
+                connectionService.addConnectionByEmail("user@mail.com", "friend@mail.com")
+        );
 
         assertThat(thrown)
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("User not found");
+                .hasMessage("Cet utilisateur n'est pas sur l'application");
 
         verify(connectionRepository, never()).save(any());
     }
