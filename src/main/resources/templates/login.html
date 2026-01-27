@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion - Pay My Buddy</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+</head>
+<body class="body_centered">
+    <div class="login_frame">
+        <header>
+            <div class="title_button">
+                <p>Pay My Buddy</p>
+            </div>
+        </header>
+
+        <form th:action="@{/login}" method="post" class="login_form">
+            
+            <input type="email"
+               name="username"
+               placeholder="Mail"
+               requireds
+               aria-label="Adresse email"
+               autofocus/>
+
+            <input type="password"
+               name="password"
+               placeholder="Mot de passe"
+               required
+               aria-label="Mot de passe"/>
+
+            <button type="submit" class="login_button">Se connecter</button>
+        </form>
+    </div>
+</body>
+</html>

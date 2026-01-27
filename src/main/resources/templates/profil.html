@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil - Pay My Buddy</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page_transfert">
+        <header class="appBar">
+            <nav class="appBar__nav">
+                <div class="appBar__title">
+                    <p>Pay My Buddy</p>
+                </div>
+                <div class="appBar__menu">
+                    <a th:href="@{/transfert}" class="appBar__navItem">Transfert</a>
+                    <a th:href="@{/profil}" class="appBar__navItem active">Profil</a>
+                    <a th:href="@{connections/add}" class="appBar__navItem">Ajouter relation</a>
+                    <a th:href="@{/logout}" class="appBar__navItem">Se déconnecter</a>
+                </div>
+            </nav>
+        </header>
+        <main class="page">
+        </main>
+    </div>
+</body>
+</html>
