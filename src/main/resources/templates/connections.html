@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter - Pay My Buddy</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+        <header class="appBar">
+            <nav class="appBar__nav">
+                <div class="appBar__title">
+                    <p>Pay My Buddy</p>
+                </div>
+                <div class="appBar__menu">
+                    <a th:href="@{/transfert}" class="appBar__navItem">Transfert</a>
+                    <a th:href="@{/profil}" class="appBar__navItem ">Profil</a>
+                    <a th:href="@{/connections/add}" class="appBar__navItem active">Ajouter relation</a>
+                    <a th:href="@{/logout}" class="appBar__navItem">Se déconnecter</a>
+                </div>
+            </nav>
+        </header>
+        <div class="connections_page"></div>
+        <main>
+            <form th:action="@{/connections/add}" method="post" class="add_connections_form">
+                <label for="email" class="add_connections_label">Chercher une relation</label>
+                <div class="add_connections_row">
+                <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Saisir une adresse mail"
+                        required
+                class="add_connections_input"/>
+
+                <button type="submit" class="add_connections_button">Ajouter</button>
+                </div>
+
+                <div class="add_connections_messages">
+                <p th:if="${success}" th:text="${success}" class="message message--success"></p>
+                <p th:if="${error}" th:text="${error}" class="message message--error"></p>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const messages = document.querySelectorAll(".message");
+
+        messages.forEach(message => {
+            setTimeout(() => {
+                message.style.opacity = "0";
+                message.style.transition = "opacity 0.5s ease";
+
+                setTimeout(() => message.remove(), 500);
+            }, 3000);
+        });
+    });
+    </script>
+
+</body>
+</html>

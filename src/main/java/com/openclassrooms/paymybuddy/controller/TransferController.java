@@ -17,8 +17,8 @@ public class TransferController {
      *
      * @return the name of the transfer view
      */
-    @GetMapping("/transfer")
+    @GetMapping("/transfert")
     public String showTransferPage(){
-        return "transfer";
+        return "transfert";
     }
 }
