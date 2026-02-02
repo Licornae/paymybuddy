@@ -44,13 +44,13 @@ public class ConnectionControllerTest {
         mockMvc.perform(post("/connections/add")
                         .with(csrf())
                         .param("email", "friend@mail.com"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("success"));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/connections/add"))
+                .andExpect(flash().attributeExists("success"));
 
         verify(connectionService).addConnectionByEmail(
                 org.mockito.ArgumentMatchers.eq("user@mail.com"),
                 org.mockito.ArgumentMatchers.eq("friend@mail.com")
         );
-
     }
 }
