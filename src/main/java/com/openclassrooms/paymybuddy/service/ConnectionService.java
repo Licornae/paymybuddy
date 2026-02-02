@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Service for managing user connections.
  *
@@ -104,4 +106,16 @@ public class ConnectionService {
 
         connectionRepository.save(connection);
     }
+
+    public List<AppUser> getUserConnections(String userEmail) {
+
+        AppUser user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalStateException("Utilisateur introuvable"));
+
+        return connectionRepository.findConnectionsByUser(user)
+                .stream()
+                .map(Connection::getFriend)
+                .toList();
+    }
+
 }

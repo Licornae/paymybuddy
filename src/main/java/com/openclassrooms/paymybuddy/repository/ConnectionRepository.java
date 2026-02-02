@@ -5,6 +5,8 @@ import com.openclassrooms.paymybuddy.model.Connection;
 import com.openclassrooms.paymybuddy.model.ConnectionId;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 /**
  * Repository interface for managing {@link Connection} entities.
  *
@@ -17,4 +19,6 @@ import org.springframework.data.repository.CrudRepository;
 public interface ConnectionRepository extends CrudRepository<Connection, ConnectionId> {
 
     boolean existsByUserAndFriend(AppUser user, AppUser friend);
+
+    List<Connection> findConnectionsByUser(AppUser user);
 }
