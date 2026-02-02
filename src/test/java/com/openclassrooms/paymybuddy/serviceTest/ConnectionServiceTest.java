@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mock;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -105,5 +106,27 @@ public class ConnectionServiceTest {
                 .hasMessage("Cet utilisateur n'est pas sur l'application");
 
         verify(connectionRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldFindAllFriendsOfUser() {
+
+        AppUser user = new AppUser();
+        user.setEmail("user@mail.com");
+
+        AppUser friend = new AppUser();
+        friend.setEmail("friend@mail.com");
+
+        Connection connection = new Connection();
+        connection.setUser(user);
+        connection.setFriend(friend);
+
+        when(userRepository.findByEmail("user@mail.com")).thenReturn(Optional.of(user));
+        when(connectionRepository.findConnectionsByUser(user)).thenReturn(List.of(connection));
+
+        List<AppUser> friends = connectionService.getUserConnections("user@mail.com");
+
+        assertThat(friends).hasSize(1);
+        assertThat(friends.get(0).getEmail()).isEqualTo("friend@mail.com");
     }
 }
