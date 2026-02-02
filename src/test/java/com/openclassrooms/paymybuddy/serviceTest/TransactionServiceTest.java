@@ -1,12 +1,10 @@
 package com.openclassrooms.paymybuddy.serviceTest;
 
 import com.openclassrooms.paymybuddy.model.AppUser;
-import com.openclassrooms.paymybuddy.model.Connection;
 import com.openclassrooms.paymybuddy.model.Transaction;
 import com.openclassrooms.paymybuddy.repository.ConnectionRepository;
 import com.openclassrooms.paymybuddy.repository.TransactionRepository;
 import com.openclassrooms.paymybuddy.repository.UserRepository;
-import com.openclassrooms.paymybuddy.service.ConnectionService;
 import com.openclassrooms.paymybuddy.service.TransactionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mock;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -110,5 +109,31 @@ public class TransactionServiceTest {
         assertThat(thrown)
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Users are not friends");
+    }
+
+    @Test
+    public void shouldReturnSentTransactionsOfUser() {
+
+        AppUser user = new AppUser();
+        user.setEmail("user@mail.com");
+
+        AppUser friend = new AppUser();
+        friend.setUsername("friend");
+
+        Transaction transaction = new Transaction();
+        transaction.setSender(user);
+        transaction.setReceiver(friend);
+        transaction.setDescription("Déjeuner");
+        transaction.setAmount(15.0);
+
+        when(userRepository.findByEmail("user@mail.com")).thenReturn(Optional.of(user));
+        when(transactionRepository.findTransactionsBySender(user)).thenReturn(List.of(transaction));
+
+        List<Transaction> transactions = transactionService.getUserSentTransactions("user@mail.com");
+
+        assertThat(transactions).hasSize(1);
+        assertThat(transactions.get(0).getReceiver().getUsername()).isEqualTo("friend");
+        assertThat(transactions.get(0).getDescription()).isEqualTo("Déjeuner");
+        assertThat(transactions.get(0).getAmount()).isEqualTo(15.0);
     }
 }
