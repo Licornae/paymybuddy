@@ -12,14 +12,14 @@
     <div class="page_transfert">
         <header class="appBar">
                 <nav class="appBar__nav">
-                <div class="appBar__title">
+                <a th:href="@{/transfert}" class="appBar__title">
                     <img 
                     th:src="@{/images/logo-pmb.svg}"
                     alt="Logo Pay My Buddy"
                     class="appBar__logo"
                     />
                     <span class="appBar__name">Pay My Buddy</span>
-                </div>
+                </a>
                 <div class="appBar__menu">
                     <a th:href="@{/transfert}" class="appBar__navItem active">Transfert</a>
                     <a th:href="@{/profil}" class="appBar__navItem">Profil</a>

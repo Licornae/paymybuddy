@@ -1,5 +1,6 @@
 package com.openclassrooms.paymybuddy.serviceTest;
 
+import com.openclassrooms.paymybuddy.dto.ConnectionDTO;
 import com.openclassrooms.paymybuddy.model.AppUser;
 import com.openclassrooms.paymybuddy.model.Connection;
 import com.openclassrooms.paymybuddy.repository.ConnectionRepository;
@@ -109,13 +110,15 @@ public class ConnectionServiceTest {
     }
 
     @Test
-    void shouldFindAllFriendsOfUser() {
+    public void shouldFindAllFriendsOfUser() {
 
         AppUser user = new AppUser();
+        user.setIdUser(1);
         user.setEmail("user@mail.com");
 
         AppUser friend = new AppUser();
-        friend.setEmail("friend@mail.com");
+        friend.setIdUser(2);
+        friend.setUsername("friend");
 
         Connection connection = new Connection();
         connection.setUser(user);
@@ -124,9 +127,12 @@ public class ConnectionServiceTest {
         when(userRepository.findByEmail("user@mail.com")).thenReturn(Optional.of(user));
         when(connectionRepository.findConnectionsByUser(user)).thenReturn(List.of(connection));
 
-        List<AppUser> friends = connectionService.getUserConnections("user@mail.com");
+        List<ConnectionDTO> friends = connectionService.getUserConnectionsDto("user@mail.com");
 
         assertThat(friends).hasSize(1);
-        assertThat(friends.get(0).getEmail()).isEqualTo("friend@mail.com");
+
+        ConnectionDTO dto = friends.getFirst();
+        assertThat(dto.id()).isEqualTo(2);
+        assertThat(dto.username()).isEqualTo("friend");
     }
 }

@@ -136,4 +136,22 @@ public class TransactionServiceTest {
         assertThat(transactions.get(0).getDescription()).isEqualTo("Déjeuner");
         assertThat(transactions.get(0).getAmount()).isEqualTo(15.0);
     }
+
+    @Test
+    public void shouldThrowExceptionWhenDescriptionIsTooLong() {
+        int senderId = 1;
+        int receiverId = 2;
+        double amount = 10.0;
+
+        String longDescription = "bla".repeat(100);
+
+        Throwable thrown = catchThrowable(() ->
+                transactionService.createTransaction(senderId, receiverId, amount, longDescription)
+        );
+
+        assertThat(thrown)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("La description ne doit pas dépasser 200 caractères");
+    }
+
 }

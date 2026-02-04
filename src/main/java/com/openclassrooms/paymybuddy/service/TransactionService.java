@@ -65,31 +65,36 @@ public class TransactionService {
 
         if (amount <= 0) {
             log.warn("Transaction rejected: invalid amount {}", amount);
-            throw new IllegalArgumentException("Amount must be greater than zero");
+            throw new IllegalArgumentException("Le montant doit-être supérieur à 0€");
+        }
+
+        if (description != null && description.length() > 200) {
+            log.warn("Transaction rejected: description too long ({} chars)", description.length());
+            throw new IllegalArgumentException("La description ne doit pas dépasser 200 caractères");
         }
 
         if (senderId == receiverId) {
             log.warn("Transaction rejected: sender and receiver are the same user (id={})",
                     senderId);
-            throw new IllegalArgumentException("Sender and receiver must be different");
+            throw new IllegalArgumentException("Vous ne pouvez pas envoyer de l'argent à vous-même");
         }
 
         AppUser sender = userRepository.findById(senderId)
                 .orElseThrow(() -> {
                     log.warn("Transaction rejected: sender not found (id={})", senderId);
-                    return new IllegalArgumentException("Sender not found");
+                    return new IllegalArgumentException("Expéditeur introuvable");
                 });
 
         AppUser receiver = userRepository.findById(receiverId)
                 .orElseThrow(() -> {
                     log.warn("Transaction rejected: receiver not found (id={})", receiverId);
-                    return new IllegalArgumentException("Receiver not found");
+                    return new IllegalArgumentException("Récepteur introuvable");
                 });
 
         if (!connectionRepository.existsByUserAndFriend(sender, receiver)) {
             log.warn("Transaction rejected: users not connected (senderId={}, receiverId={})",
                     senderId, receiverId);
-            throw new IllegalStateException("Users are not friends");
+            throw new IllegalStateException("Les utilisateurs ne sont pas amis");
         }
 
         Transaction transaction = new Transaction();
