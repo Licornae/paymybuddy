@@ -9,6 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 </head>
 <body class="body_centered">
+    <div class="register_messages">
+        <div th:if="${success}" class="alert alert--success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert--error" th:text="${error}"></div>
+    </div>
     <div class="login_frame">
         <header>
             <div class="title_button">
@@ -32,7 +36,24 @@
                aria-label="Mot de passe"/>
 
             <button type="submit" class="login_button">Se connecter</button>
+            <p class="login_redirect">
+            Pas encore de compte ?
+            <a th:href="@{/register}">S’inscrire</a>
+            </p>
         </form>
     </div>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const messages = document.querySelectorAll(".alert");
+        
+    messages.forEach(message => {
+        setTimeout(() => {
+            message.style.opacity = "0";
+            message.style.transition = "opacity 0.5s ease";
+        setTimeout(() => message.remove(), 500);
+        }, 3000);
+        });
+        });
+    </script>
 </body>
 </html>

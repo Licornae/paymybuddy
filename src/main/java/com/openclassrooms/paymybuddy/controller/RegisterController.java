@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controller responsible for user registration.
@@ -31,7 +32,6 @@ public class RegisterController {
 
     /**
      * Processes the registration form submission.
-     *
      * Creates a new user with the provided credentials and redirects
      * the user to the login page upon successful registration.
      *
@@ -43,9 +43,21 @@ public class RegisterController {
     @PostMapping("/register")
     public String registerUser(@RequestParam String username,
                                @RequestParam String email,
-                               @RequestParam String password) {
+                               @RequestParam String password,
+                               RedirectAttributes redirectAttributes) {
 
-        userService.registerUser(username, email, password);
-        return "redirect:/login";
+        try {
+            userService.registerUser(username, email, password);
+
+            redirectAttributes.addFlashAttribute("success", "Inscription réussie. Vous pouvez maintenant vous connecter.");
+
+            return "redirect:/login";
+
+        } catch (IllegalArgumentException e) {
+
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+
+            return "redirect:/register";
+        }
     }
 }
