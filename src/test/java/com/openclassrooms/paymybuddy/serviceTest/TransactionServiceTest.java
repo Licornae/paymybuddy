@@ -73,7 +73,7 @@ public class TransactionServiceTest {
 
         assertThat(thrown)
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Amount must be greater than zero");
+                .hasMessage("Le montant doit-être supérieur à 0€");
     }
 
     @Test
@@ -85,7 +85,7 @@ public class TransactionServiceTest {
 
         assertThat(thrown)
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Amount must be greater than zero");
+                .hasMessage("Le montant doit-être supérieur à 0€");
     }
 
     @Test
@@ -108,7 +108,7 @@ public class TransactionServiceTest {
 
         assertThat(thrown)
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Users are not friends");
+                .hasMessage("Les utilisateurs ne sont pas amis");
     }
 
     @Test
