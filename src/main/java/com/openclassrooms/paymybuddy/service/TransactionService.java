@@ -1,5 +1,6 @@
 package com.openclassrooms.paymybuddy.service;
 
+import com.openclassrooms.paymybuddy.dto.TransactionViewDTO;
 import com.openclassrooms.paymybuddy.model.AppUser;
 import com.openclassrooms.paymybuddy.model.Transaction;
 import com.openclassrooms.paymybuddy.repository.ConnectionRepository;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Service layer responsible for handling money transfer transactions between users.
@@ -103,5 +105,33 @@ public class TransactionService {
                 savedTransaction.getIdTransaction(), senderId, receiverId, amount);
 
         return savedTransaction;
+    }
+
+    public List<Transaction> getUserSentTransactions(String userEmail) {
+
+        AppUser user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalStateException("Utilisateur introuvable"));
+
+        return transactionRepository.findTransactionsBySender(user);
+    }
+
+    public AppUser getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Utilisateur introuvable"));
+    }
+
+    public List<TransactionViewDTO> getUserSentTransactionsDto(String email) {
+
+        AppUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Utilisateur introuvable"));
+
+        return transactionRepository.findTransactionsBySender(user)
+                .stream()
+                .map(tr -> new TransactionViewDTO(
+                        tr.getReceiver().getUsername(),
+                        tr.getDescription(),
+                        tr.getAmount()
+                ))
+                .toList();
     }
 }

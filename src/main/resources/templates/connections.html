@@ -6,21 +6,26 @@
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
         <header class="appBar">
-            <nav class="appBar__nav">
+                <nav class="appBar__nav">
                 <div class="appBar__title">
-                    <p>Pay My Buddy</p>
+                    <img 
+                    th:src="@{/images/logo-pmb.svg}"
+                    alt="Logo Pay My Buddy"
+                    class="appBar__logo"
+                    />
+                    <span class="appBar__name">Pay My Buddy</span>
                 </div>
                 <div class="appBar__menu">
-                    <a th:href="@{/transfert}" class="appBar__navItem">Transfert</a>
-                    <a th:href="@{/profil}" class="appBar__navItem ">Profil</a>
-                    <a th:href="@{/connections/add}" class="appBar__navItem active">Ajouter relation</a>
+                    <a th:href="@{/transfert}" class="appBar__navItem active">Transfert</a>
+                    <a th:href="@{/profil}" class="appBar__navItem">Profil</a>
+                    <a th:href="@{connections/add}" class="appBar__navItem">Ajouter relation</a>
                     <a th:href="@{/logout}" class="appBar__navItem">Se déconnecter</a>
-                </div>
-            </nav>
+                </div>  
+                </nav>
         </header>
         <div class="connections_page"></div>
         <main>
@@ -39,8 +44,8 @@
                 </div>
 
                 <div class="add_connections_messages">
-                <p th:if="${success}" th:text="${success}" class="message message--success"></p>
-                <p th:if="${error}" th:text="${error}" class="message message--error"></p>
+                <p th:if="${success}" th:text="${success}" class="alert .alert--success"></p>
+                <p th:if="${error}" th:text="${error}" class="alert alert--error"></p>
                 </div>
             </form>
         </main>
@@ -48,7 +53,7 @@
 
     <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const messages = document.querySelectorAll(".message");
+        const messages = document.querySelectorAll(".alert");
 
         messages.forEach(message => {
             setTimeout(() => {

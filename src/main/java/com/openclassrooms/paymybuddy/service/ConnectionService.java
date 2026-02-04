@@ -1,5 +1,6 @@
 package com.openclassrooms.paymybuddy.service;
 
+import com.openclassrooms.paymybuddy.dto.ConnectionDTO;
 import com.openclassrooms.paymybuddy.model.AppUser;
 import com.openclassrooms.paymybuddy.model.Connection;
 import com.openclassrooms.paymybuddy.repository.ConnectionRepository;
@@ -107,14 +108,17 @@ public class ConnectionService {
         connectionRepository.save(connection);
     }
 
-    public List<AppUser> getUserConnections(String userEmail) {
+    public List<ConnectionDTO> getUserConnectionsDto(String email) {
 
-        AppUser user = userRepository.findByEmail(userEmail)
+        AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("Utilisateur introuvable"));
 
         return connectionRepository.findConnectionsByUser(user)
                 .stream()
-                .map(Connection::getFriend)
+                .map(c -> new ConnectionDTO(
+                        c.getFriend().getIdUser(),
+                        c.getFriend().getUsername()
+                ))
                 .toList();
     }
 

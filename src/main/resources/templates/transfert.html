@@ -6,7 +6,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     </head>
 
     <body>
@@ -14,7 +14,12 @@
             <header class="appBar">
                 <nav class="appBar__nav">
                 <div class="appBar__title">
-                    <p>Pay My Buddy</p>
+                    <img 
+                    th:src="@{/images/logo-pmb.svg}"
+                    alt="Logo Pay My Buddy"
+                    class="appBar__logo"
+                    />
+                    <span class="appBar__name">Pay My Buddy</span>
                 </div>
                 <div class="appBar__menu">
                     <a th:href="@{/transfert}" class="appBar__navItem active">Transfert</a>
@@ -25,10 +30,112 @@
                 </nav>
             </header>
             <main class="page">
+                <section class="transfer_section">
+                    <form th:action="@{/transfert}" th:object="${transferForm}" method="post"class="transfer_form">
+                    <div class="input_trans select_wrapper">
+                    <select th:field="*{receiverId}" class="input_trans select_friends" required>
+                    <option th:each="friend : ${connections}"
+                    th:value="${friend.id}"
+                    th:text="${friend.username}">
+                    </option>
+                    </select>
+                    </div>
+                    <input type="text" name="description" placeholder="Description" class="input_trans input_description" required>
+                    <div class="amount_wrapper">
+                    <input type="text" name="amount" placeholder="0€" min="0" inputmode="decimal" class="input_trans input_amount" required>
+                    <div class="amount_arrows">
+                    <span class="arrow arrow_up" aria-label="Augmenter"></span>
+                    <span class="arrow arrow_down" aria-label="Diminuer"></span>
+                    </div>
+                    </div>
+                    <button type="submit" class="btn_pay">Payer</button>
+                    </form>
+                    <div class="transfer_messages">
+                    <div th:if="${success}" class="alert alert--success" th:text="${success}"></div>
+                    <div th:if="${error}" class="alert alert--error" th:text="${error}"></div>
+                    </div>
+                </section>
 
+                <section class="transactions_section">
+                 <div class="transactions_header">
+                 <h2>Mes transactions</h2>
+                </div>
+                <table class="transactions_table">
+                    <thead>
+                        <tr>
+                            <th>Relations</th>
+                            <th>Description</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="tx : ${transactions}">
+                        <td class="receiver" th:text="${tx.receiver}"></td>
+                        <td th:text="${tx.description}"></td>
+                        <td th:text="${tx.amount} + ' €'"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </main>
-
         </div>
-    </body>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                const input = document.querySelector(".input_amount");
+                const up = document.querySelector(".arrow_up");
+                const down = document.querySelector(".arrow_down");
+                const step = 0.5;
 
+                const sanitize = (value) => {
+                    value = value.replace(",", ".");
+                    value = value.replace(/[^0-9.]/g, "");
+
+                    const parts = value.split(".");
+                    if (parts.length > 2) {
+                    value = parts[0] + "." + parts.slice(1).join("");
+                    }
+                    return value;
+                };
+
+                const format = (value) => {
+                    const num = parseFloat(value);
+                    if (isNaN(num)) return "";
+                    return num.toFixed(1);
+                };
+
+                input.addEventListener("input", () => {
+                    input.value = sanitize(input.value);
+                });
+
+                input.addEventListener("blur", () => {
+                    input.value = format(input.value);
+                });
+
+                up.addEventListener("click", () => {
+                    const value = parseFloat(input.value) || 0;
+                    input.value = format(value + step);
+                });
+
+                down.addEventListener("click", () => {
+                    const value = parseFloat(input.value) || 0;
+                    if (value - step >= 0) {
+                    input.value = format(value - step);
+                    }
+                });
+                });
+            </script>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                const messages = document.querySelectorAll(".alert");
+
+                messages.forEach(message => {
+                    setTimeout(() => {
+                    message.style.opacity = "0";
+                    message.style.transition = "opacity 0.5s ease";
+
+                    setTimeout(() => message.remove(), 500);
+                    }, 3000);
+                });
+                });
+            </script>
+    </body>
 </html>

@@ -35,10 +35,14 @@ public class Transaction {
     private Double amount;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "sender_id")
+    @JoinColumn(
+            name = "sender_idUser",
+            referencedColumnName = "id_user")
     private AppUser sender;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "receiver_id")
+    @JoinColumn(
+            name = "receiver_idUser",
+            referencedColumnName = "id_user")
     private AppUser receiver;
 }
