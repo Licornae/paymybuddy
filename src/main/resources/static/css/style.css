@@ -54,8 +54,10 @@ body {
 .body_centered {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 1.5rem;
 }
 
 p,
@@ -147,6 +149,25 @@ p,
 
     font-weight: var(--font-weight-bold);
 }
+
+.login_redirect {
+    margin-top: 0rem;
+    font-size: var(--font-size-little);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-grey-text);
+    text-align: center;
+}
+
+.login_redirect a {
+    color: var(--color-button);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+}
+
+.login_redirect a:hover {
+    text-decoration: underline;
+}
+
 
 /* CONNECTIONS */
 
@@ -503,6 +524,8 @@ p,
     border-radius: var(--border-radius);
 
     max-width: 40rem;
+    width: 100%;
+    box-sizing: border-box; 
 }
 
 .alert--success {

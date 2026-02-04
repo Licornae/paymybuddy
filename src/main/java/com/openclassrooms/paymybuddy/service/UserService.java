@@ -9,8 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.openclassrooms.paymybuddy.model.AppUser;
 
 /**
- * Service layer handling business logic related to users.
- *
+ * Service layer handling business logic related to users.*
  * Ensures uniqueness of email and username before saving a user.
  */
 @Slf4j
@@ -18,55 +17,32 @@ import com.openclassrooms.paymybuddy.model.AppUser;
 @Transactional //Le service est transactionnel afin de garantir l’atomicité des règles métier avant la persistance.
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private static final int MAX_USERNAME_LENGTH = 50;
+    private static final int MAX_EMAIL_LENGTH = 50;
+    private static final int MAX_PASSWORD_LENGTH = 250;
+
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
-    /**
-     * Saves a new user after validating email and username uniqueness.
-     *
-     * @param user the user to save
-     * @return the saved user
-     * @throws IllegalArgumentException if email or username already exists
-     */
-    public AppUser saveUser(AppUser user) {
-
-        if (user == null) {
-            throw new IllegalArgumentException("User cannot be null");
-        }
-
-        log.info("Attempting to save user with email={} and username={}",
-                user.getEmail(), user.getUsername());
-
-        if (userRepository.existsByEmail(user.getEmail())){
-            log.warn("Email already exists: {}", user.getEmail());
-            throw new IllegalArgumentException("Email already exists");
-        }
-
-        if (userRepository.existsByUsername(user.getUsername())){
-            log.warn("Username already exists: {}", user.getUsername());
-            throw new IllegalArgumentException("Username already exists");
-        }
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        AppUser savedUser = userRepository.save(user);
-        log.info("User successfully saved with id={}", savedUser.getIdUser());
-
-        return savedUser;
+    public UserService(UserRepository userRepository,
+                       BCryptPasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public void registerUser(String username, String email, String password){
+    /**
+     * Registers a new user.
+     *
+     * @param username user's username
+     * @param email    user's email
+     * @param password raw password
+     * @return saved AppUser
+     */
+    public AppUser registerUser(String username, String email, String password) {
 
-        if (userRepository.findByUsername(username) != null) {
-            throw new IllegalArgumentException("username déjà utilisé");
-        }
-
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new IllegalArgumentException("Email déjà utilisé");
-        }
+        validateUserData(username, email, password);
+        checkUniqueness(username, email);
 
         AppUser user = new AppUser();
         user.setUsername(username);
@@ -74,6 +50,44 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(password));
         user.setRole("USER");
 
-        userRepository.save(user);
+        log.info("Registering new user with email={}", email);
+
+        return userRepository.save(user);
+    }
+
+    private void validateUserData(String username, String email, String password) {
+
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Le nom d'utilisateur est obligatoire");
+        }
+        if (username.length() > MAX_USERNAME_LENGTH) {
+            throw new IllegalArgumentException("Le nom d'utilisateur ne doit pas dépasser 50 caractères");
+        }
+
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("L'email est obligatoire");
+        }
+        if (email.length() > MAX_EMAIL_LENGTH) {
+            throw new IllegalArgumentException("L'email ne doit pas dépasser 50 caractères");
+        }
+
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Le mot de passe est obligatoire");
+        }
+
+        if (password.length() > MAX_PASSWORD_LENGTH) {
+            throw new IllegalArgumentException("Le mot de passe ne doit pas dépasser 250 caractères");
+        }
+    }
+
+    private void checkUniqueness(String username, String email) {
+
+        if (userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("Ce nom d'utilisateur existe déjà");
+        }
+
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("L'email existe déjà");
+        }
     }
 }
