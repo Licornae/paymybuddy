@@ -18,5 +18,11 @@ import java.util.List;
  */
 @Repository
 public interface TransactionRepository extends CrudRepository<Transaction, Integer> {
+
     List<Transaction> findTransactionsBySender(AppUser sender);
+
+    void deleteBySender(AppUser sender);
+
+    void deleteByReceiver(AppUser receiver);
+
 }

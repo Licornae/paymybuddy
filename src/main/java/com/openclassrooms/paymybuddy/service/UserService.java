@@ -1,5 +1,8 @@
 package com.openclassrooms.paymybuddy.service;
 
+import com.openclassrooms.paymybuddy.dto.UserUpdateDTO;
+import com.openclassrooms.paymybuddy.repository.ConnectionRepository;
+import com.openclassrooms.paymybuddy.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -9,35 +12,52 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.openclassrooms.paymybuddy.model.AppUser;
 
 /**
- * Service layer handling business logic related to users.*
- * Ensures uniqueness of email and username before saving a user.
+ * Service class for managing user operations in the PayMyBuddy application.
+ * 
+ * Handles user registration, updates, retrieval, and deletion with validation
+ * and security features including password encryption and uniqueness checks.
  */
-@Slf4j
 @Service
-@Transactional //Le service est transactionnel afin de garantir l’atomicité des règles métier avant la persistance.
+@Slf4j
+@Transactional
 public class UserService {
 
     private static final int MAX_USERNAME_LENGTH = 50;
     private static final int MAX_EMAIL_LENGTH = 50;
     private static final int MAX_PASSWORD_LENGTH = 250;
+    private static final String USER_NOT_FOUND = "Utilisateur introuvable";
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final ConnectionRepository connectionRepository;
+    private final TransactionRepository transactionRepository;
 
+
+    /**
+     * Constructs a UserService with required dependencies.
+     *
+     * @param userRepository the user repository for database operations
+     * @param passwordEncoder the BCrypt password encoder for secure password storage
+     * @param connectionRepository the connection repository for managing user connections
+     * @param transactionRepository the transaction repository for managing user transactions
+     */
     @Autowired
     public UserService(UserRepository userRepository,
-                       BCryptPasswordEncoder passwordEncoder) {
+                       BCryptPasswordEncoder passwordEncoder, ConnectionRepository connectionRepository, TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.connectionRepository = connectionRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     /**
-     * Registers a new user.
+     * Registers a new user with the provided credentials.
      *
-     * @param username user's username
-     * @param email    user's email
-     * @param password raw password
-     * @return saved AppUser
+     * @param username the desired username
+     * @param email the user's email address
+     * @param password the user's password (will be encrypted)
+     * @return the newly created AppUser entity
+     * @throws IllegalArgumentException if validation fails or username/email already exists
      */
     public AppUser registerUser(String username, String email, String password) {
 
@@ -55,39 +75,193 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    private void validateUserData(String username, String email, String password) {
+    /**
+     * Retrieves a user by their email address.
+     *
+     * @param email the email to search for
+     * @return the AppUser with the specified email
+     * @throws IllegalArgumentException if no user is found with the given email
+     */
+    public AppUser getUserByEmail(String email) {
+        log.debug("Fetching user by email={}", email);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                log.warn("User not found with email={}", email);
+                return new IllegalArgumentException(USER_NOT_FOUND);
+            });
+    }
 
+    /**
+     * Updates an existing user's profile information.
+     *
+     * Allows partial updates of username, email, and password. Only non-blank
+     * fields in the DTO will be updated.
+     *
+     * @param userId the ID of the user to update
+     * @param dto the user update data transfer object containing new values
+     * @return the updated AppUser entity
+     * @throws IllegalArgumentException if user not found or validation fails
+     */
+    public AppUser updateUser(int userId, UserUpdateDTO dto) {
+        log.debug("Updating user id={}", userId);
+
+        AppUser user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                log.warn("User not found for update, id={}", userId);
+                return new IllegalArgumentException(USER_NOT_FOUND);
+            });
+
+        // USERNAME
+        if (hasText(dto.getUsername())) {
+            validateUsername(dto.getUsername());
+            if (!dto.getUsername().equals(user.getUsername())
+                    && userRepository.existsByUsername(dto.getUsername())) {
+                log.warn("Username already exists: {}", dto.getUsername());
+                throw new IllegalArgumentException("Ce nom d'utilisateur existe déjà");
+            }
+            user.setUsername(dto.getUsername());
+            log.debug("Username updated to: {}", dto.getUsername());
+        }
+
+        // EMAIL
+        if (hasText(dto.getEmail())) {
+            validateEmail(dto.getEmail());
+            if (!dto.getEmail().equals(user.getEmail())
+                    && userRepository.existsByEmail(dto.getEmail())) {
+                log.warn("Email already exists: {}", dto.getEmail());
+                throw new IllegalArgumentException("L'email existe déjà");
+            }
+            user.setEmail(dto.getEmail());
+            log.debug("Email updated to: {}", dto.getEmail());
+        }
+
+        // PASSWORD
+        if (hasText(dto.getPassword())) {
+            validatePassword(dto.getPassword());
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+            log.debug("Password updated for user id={}", userId);
+        }
+        log.info("User id={} successfully updated", userId);
+        return userRepository.save(user);
+    }
+
+    private boolean hasText(String value) {
+    return value != null && !value.isBlank();
+    }
+
+    /**
+     * Validates the username according to business rules.
+     *
+     * @param username the username to validate
+     * @throws IllegalArgumentException if username is blank or exceeds maximum length
+     */
+    private void validateUsername(String username) {
         if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Le nom d'utilisateur est obligatoire");
+            log.debug("Username validation failed: blank");
+            throw new IllegalArgumentException("Nom d'utilisateur obligatoire");
         }
         if (username.length() > MAX_USERNAME_LENGTH) {
+            log.debug("Username validation failed: exceeds max length");
             throw new IllegalArgumentException("Le nom d'utilisateur ne doit pas dépasser 50 caractères");
-        }
-
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("L'email est obligatoire");
-        }
-        if (email.length() > MAX_EMAIL_LENGTH) {
-            throw new IllegalArgumentException("L'email ne doit pas dépasser 50 caractères");
-        }
-
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("Le mot de passe est obligatoire");
-        }
-
-        if (password.length() > MAX_PASSWORD_LENGTH) {
-            throw new IllegalArgumentException("Le mot de passe ne doit pas dépasser 250 caractères");
         }
     }
 
+     /**
+     * Validates the email address according to business rules.
+     *
+     * @param email the email to validate
+     * @throws IllegalArgumentException if email is blank or exceeds maximum length
+     */
+    private void validateEmail(String email) {
+        if (email == null || email.isBlank()) {
+            log.debug("Email validation failed: blank");
+            throw new IllegalArgumentException("Email obligatoire");
+        }
+        if (email.length() > MAX_EMAIL_LENGTH) {
+            log.debug("Email validation failed: exceeds max length");
+            throw new IllegalArgumentException("Email trop long");
+        }
+    }
+
+    /**
+     * Validates the password according to business rules.
+     *
+     * @param password the password to validate
+     * @throws IllegalArgumentException if password is blank or exceeds maximum length
+     */
+    private void validatePassword(String password) {
+        if (password == null ||password.isBlank()) {
+            log.debug("Password validation failed: blank");
+            throw new IllegalArgumentException("Mot de passe obligatoire");
+        }
+        if (password.length() > MAX_PASSWORD_LENGTH) {
+            log.debug("Password validation failed: exceeds max length");
+            throw new IllegalArgumentException("Mot de passe trop long");
+        }
+    }
+
+    /**
+     * Validates all user registration data.
+     *
+     * @param username the username to validate
+     * @param email the email to validate
+     * @param password the password to validate
+     * @throws IllegalArgumentException if any field is invalid
+     */
+    private void validateUserData(String username, String email, String password) {
+        log.trace("Validating user registration data");
+        validateUsername(username);
+        validateEmail(email);
+        validatePassword(password);
+    }
+
+    /**
+     * Checks if username and email are unique in the database.
+     *
+     * @param username the username to check for uniqueness
+     * @param email the email to check for uniqueness
+     * @throws IllegalArgumentException if username or email already exists
+     */
     private void checkUniqueness(String username, String email) {
+        log.trace("Checking uniqueness for username={}, email={}", username, email);
 
         if (userRepository.existsByUsername(username)) {
+            log.warn("Username already exists: {}", username);
             throw new IllegalArgumentException("Ce nom d'utilisateur existe déjà");
         }
 
         if (userRepository.existsByEmail(email)) {
+            log.warn("Email already exists: {}", email);
             throw new IllegalArgumentException("L'email existe déjà");
         }
     }
+
+    /**
+     * Deletes a user and all associated data.
+     *
+     * Removes the user along with their connections and transactions
+     * (both as sender and receiver).
+     *
+     * @param userId the ID of the user to delete
+     * @throws IllegalArgumentException if user not found
+     */
+    @Transactional
+    public void deleteUser(int userId) {
+
+        AppUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND));
+
+        log.info("Deleting user id={}", userId);
+
+        connectionRepository.deleteByUser(user);
+        connectionRepository.deleteByFriend(user);
+
+        transactionRepository.deleteBySender(user);
+        transactionRepository.deleteByReceiver(user);
+
+        userRepository.delete(user);
+
+        log.info("User id={} successfully deleted", userId);
+    }
+
 }

@@ -21,4 +21,9 @@ public interface ConnectionRepository extends CrudRepository<Connection, Connect
     boolean existsByUserAndFriend(AppUser user, AppUser friend);
 
     List<Connection> findConnectionsByUser(AppUser user);
+
+    void deleteByUser(AppUser user);
+
+    void deleteByFriend(AppUser friend);
+
 }
