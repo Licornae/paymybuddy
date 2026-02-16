@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="page_transfert">
         <header class="appBar">
                 <nav class="appBar__nav">
                 <a th:href="@{/transfert}" class="appBar__title">
@@ -27,9 +26,165 @@
                     <a th:href="@{/logout}" class="appBar__navItem">Se déconnecter</a>
                 </div>  
                 </nav>
-            </header>
-        <main class="page">
+        </header>
+
+        <main class="page_profil">
+            
+            <div class="profile_container">
+
+            <div th:if="${success}" 
+             class="alert alert--success"
+             th:text="${success}"></div>
+
+            <div th:if="${error}" 
+             class="alert alert--error"
+             th:text="${error}"></div>
+
+            <div class="profile_wrapper">
+            <div class="profile_card">
+
+            <div class="profile_row">
+                <span class="profile_label">Username</span>
+                <span class="profile_value" th:text="${user.username}"></span>
+            </div>
+
+            <div class="profile_row">
+                <span class="profile_label">Email</span>
+                <span class="profile_value" th:text="${user.email}"></span>
+            </div>
+
+            <div class="profile_row">
+                <span class="profile_label">Mot de passe</span>
+                <span class="profile_value">********</span>
+            </div>
+
+            <button id="openModal" class="profile_button">
+             Modifier
+            </button>
+            </div>
+            <button id="deleteAccountBtn" class="delete_button">
+            Supprimer le compte
+            </button>
+            </div>
+            </div>
+            
+            <div id="modal" class="modal">
+            <div class="modal_content">
+
+            <span class="close_modal" id="closeModal">✕</span>
+
+            <form th:action="@{/profil/update}" method="post" class="modal_form">
+
+            <div class="modal_row">
+            <label for="username">Username</label>
+            <input id="username"
+            type="text"
+            name="username"
+            placeholder="Nouveau username"/>
+            </div>
+
+            <div class="modal_row">
+            <label for="email">Email</label>
+            <input id="email"
+            type="email"
+            name="email"
+            placeholder="Nouvel email"/>
+            </div>
+
+            <div class="modal_row">
+            <label for="password">Mot de passe</label>
+            <input id="password"
+            type="password"
+            name="password"
+            placeholder="Nouveau mot de passe"/>
+            </div>
+
+            <button type="submit" class="modal_button">
+            Enregistrer
+            </button>
+
+            </form>
+            </div>
+            </div>
+
+            <div id="deleteModal" class="modal">
+            <div class="modal_content delete_modal_content">
+
+            <h2>Confirmation</h2>
+
+            <p class="delete_message">
+            Êtes-vous sûr de vouloir supprimer votre compte ?<br>
+            Cette action est irréversible.
+            </p>
+
+            <div class="delete_actions">
+            <button id="cancelDelete" class="modal_button cancel_btn">
+                Annuler
+            </button>
+
+            <form th:action="@{/profil/delete}" method="post">
+                <button type="submit" class="modal_button delete_confirm_btn">
+                    Supprimer définitivement
+                </button>
+            </form>
+            </div>
+            </div>
+            </div>
         </main>
-    </div>
+
+        <script>
+        const deleteModal = document.getElementById("deleteModal");
+        const deleteBtn = document.getElementById("deleteAccountBtn");
+        const cancelDelete = document.getElementById("cancelDelete");
+
+        deleteBtn.addEventListener("click", () => {
+            deleteModal.classList.add("active");
+        });
+
+        cancelDelete.addEventListener("click", () => {
+            deleteModal.classList.remove("active");
+        });
+
+        window.addEventListener("click", (e) => {
+            if (e.target === deleteModal) {
+            deleteModal.classList.remove("active");
+            }
+        });
+        </script>
+
+
+        <script>
+        const modal = document.getElementById("modal");
+        const openBtn = document.getElementById("openModal");
+        const closeBtn = document.getElementById("closeModal");
+
+        openBtn.addEventListener("click", () => {
+            modal.classList.add("active");
+        });
+
+        closeBtn.addEventListener("click", () => {
+            modal.classList.remove("active");
+        });
+
+        window.addEventListener("click", (e) => {
+            if (e.target === modal) {
+            modal.classList.remove("active");
+            }
+        });
+        </script>
+
+        <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        const messages = document.querySelectorAll(".alert");
+        
+        messages.forEach(message => {
+        setTimeout(() => {
+            message.style.opacity = "0";
+            message.style.transition = "opacity 0.5s ease";
+        setTimeout(() => message.remove(), 500);
+        }, 3000);
+        });
+        });
+        </script>
 </body>
 </html>

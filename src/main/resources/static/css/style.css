@@ -511,6 +511,309 @@ p,
     white-space: nowrap;
 }
 
+/* PROFILE PAGE */
+.page_profil{
+    padding-top: 6rem;
+}
+
+.profile_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  
+}
+
+.profile_container {
+    max-width: 32rem;  
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.profile_card {
+    width: 100%;
+    padding: 2.5rem;
+
+    border: var(--border-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.profile_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-grey-light);
+
+    font-family: var(--font-main);
+    font-size: var(--font-size-base);
+}
+
+.profile_label {
+    font-weight: var(--font-weight-medium);
+}
+
+.profile_value {
+    color: var(--color-grey-text);
+}
+
+.profile_button {
+    display: block;
+    margin: 1rem auto 0 auto;
+
+    font-family: var(--font-main);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+
+    padding: 0.8rem 2rem;
+    background-color: var(--color-title);
+    color: white;
+
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.profile_button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-basic);
+}
+
+/* MODAL */
+
+.modal {
+    position: fixed;
+    inset: 0;
+
+    background-color: rgba(0, 0, 0, 0.4);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: opacity 0.3s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal_content {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-basic);
+
+    width: 100%;
+    max-width: 30rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal_row label {
+    font-family: var(--font-main);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+}
+
+.modal_row input {
+    width: 100%;
+    margin-right: 1rem;
+}
+
+.modal_row input::placeholder {
+    font-family: var(--font-main);
+    font-size: var(--font-size-little);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-grey-text);
+    opacity: 1; 
+}
+
+.modal_content input,
+.modal_content select {
+    height: 3.5rem;
+    padding: 0 1rem;
+
+    border-radius: var(--border-radius);
+    border: var(--border-input);
+
+    font-size: var(--font-size-20px);
+}
+
+.modal_content button {
+    background-color: var(--color-button);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    height: 3.5rem;
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+
+    font-family: var(--font-main);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+}
+
+.close_modal {
+    font-size: 1.8rem;              
+    font-weight: var(--font-weight-bold); 
+    color: var(--color-grey-text);  
+    align-self: flex-end;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.close_modal:hover {
+    color: var(--color-black);      
+    transform: scale(1.1);
+}
+
+/* STRUCTURE Modal */
+
+.modal_form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; 
+}
+
+/* Alignement label / input */
+.modal_row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Bouton */
+.modal_button {
+    align-self: center;
+    margin-top: 2rem;
+
+    width: fit-content;
+    padding: 0.8rem 2.5rem;
+
+    background-color: var(--color-button);
+    color: white;
+
+    border: none;
+    border-radius: var(--border-radius);
+
+    font-family: var(--font-main);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+
+    cursor: pointer;
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.modal_button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-basic);
+}
+
+/* Bouton supp */
+.delete_button {
+    display: block;
+
+    width: 100%;
+    max-width: 260px;
+    margin: 2rem;
+
+    padding: 0.8rem 2rem;
+
+    font-family: var(--font-main);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+
+    background-color: #c62828;
+    color: white;
+
+    border: none;
+    border-radius: var(--border-radius);
+
+    cursor: pointer;
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.delete_button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-basic);
+}
+
+/* Modal supp*/
+.delete_modal_content {
+    max-width: 28rem;
+    text-align: center;
+}
+
+.delete_message {
+    font-size: var(--font-size-little);
+    color: var(--color-grey-text);
+}
+
+.delete_actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.delete_actions form {
+    display: inline-block;
+}
+
+.delete_actions .modal_button {
+    min-width: 200px;
+}
+
+
+.modal_content .delete_confirm_btn {
+    background-color: #c62828;
+}
+
+.cancel_btn {
+    background-color: var(--color-grey-light);
+    color: var(--color-black);
+}
+
+.modal_row label {
+    font-family: var(--font-main);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+}
+
+
 /* MESSAGE ALERTE STYLE */
 
 .alert {
@@ -539,3 +842,4 @@ p,
     background-color: #fdecea;
     border: 1px solid #f5c6cb;
 }
+
