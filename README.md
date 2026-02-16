@@ -8,7 +8,7 @@ permettant aux utilisateurs :
 <li>de se connecter de manière sécurisée</li>
 <li>d’ajouter des relations (amis)</li>
 <li>d’effectuer des transactions d’argent entre utilisateurs</li>
-<li>de consulter l’historique des transactions</li>
+<li>de consulter l’historique des transactions</li><br />
 
 <p>Le projet respecte les bonnes pratiques de développement :</p>
 
