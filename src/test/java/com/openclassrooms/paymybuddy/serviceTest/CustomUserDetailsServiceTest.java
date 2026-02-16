@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class CustomUserDetailsServiceTest {
     private CustomUserDetailsService customUserDetailsService;
 
     @Test
-    public void CustomUserDetailsServiceTest(){
+    public void shouldLoadUserByEmail() {
 
         AppUser user = new AppUser();
         user.setEmail("test@mail.com");
@@ -37,5 +38,21 @@ public class CustomUserDetailsServiceTest {
         UserDetails details = customUserDetailsService.loadUserByUsername("test@mail.com");
 
         assertThat(details.getUsername()).isEqualTo("test@mail.com");
+        assertThat(details.getPassword()).isEqualTo("Password");
+        assertThat(details.getAuthorities()).extracting("authority").containsExactly("ROLE_USER");
+
+        verify(userRepository).findByEmail("test@mail.com");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUserNotFound() {
+
+        when(userRepository.findByEmail("unknown@mail.com")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> customUserDetailsService.loadUserByUsername("unknown@mail.com"))
+                .isInstanceOf(UsernameNotFoundException.class)
+                .hasMessage("User not found");
+
+        verify(userRepository).findByEmail("unknown@mail.com");
     }
 }
