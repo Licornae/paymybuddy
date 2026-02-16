@@ -30,8 +30,9 @@ public class ConnectionServiceTest {
     @Mock
     UserRepository userRepository;
 
+    //addConnection
     @Test
-    void shouldSaveConnectionWhenValid() {
+    public void shouldSaveConnectionWhenValid() {
 
         AppUser user = new AppUser();
         user.setIdUser(1);
@@ -53,12 +54,10 @@ public class ConnectionServiceTest {
         AppUser user = new AppUser();
         user.setIdUser(1);
 
-        Throwable thrown = catchThrowable(() ->
-                connectionService.addConnection(user, user));
+        Throwable thrown = catchThrowable(() -> connectionService.addConnection(user, user));
 
-        assertThat(thrown)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Cannot add yourself as a friend");
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Vous ne pouvez pas vous ajouter vous-même");
 
         verify(connectionRepository, never()).save(any());
     }
@@ -80,9 +79,35 @@ public class ConnectionServiceTest {
 
         assertThat(thrown)
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Connection already exists");
+                .hasMessage("La connection existe déjà");
 
         verify(connectionRepository, never()).save(any());
+    }
+
+    //addConnectionByEmail
+    @Test
+    void shouldAddConnectionByEmailWhenValid() {
+
+        AppUser user = new AppUser();
+        user.setIdUser(1);
+        user.setEmail("current@mail.com");
+
+        AppUser friend = new AppUser();
+        friend.setIdUser(2);
+        friend.setEmail("friend@mail.com");
+
+        when(userRepository.findByEmail("current@mail.com"))
+                .thenReturn(Optional.of(user));
+
+        when(userRepository.findByEmail("friend@mail.com"))
+                .thenReturn(Optional.of(friend));
+
+        when(connectionRepository.existsByUserAndFriend(user, friend))
+                .thenReturn(false);
+
+        connectionService.addConnectionByEmail("current@mail.com", "friend@mail.com");
+
+        verify(connectionRepository).save(any(Connection.class));
     }
 
     @Test
@@ -102,13 +127,29 @@ public class ConnectionServiceTest {
                 connectionService.addConnectionByEmail("user@mail.com", "friend@mail.com")
         );
 
-        assertThat(thrown)
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cet utilisateur n'est pas sur l'application");
 
         verify(connectionRepository, never()).save(any());
     }
 
+    @Test
+    public void shouldThrowExceptionWhenCurrentUserNotFound() {
+
+        when(userRepository.findByEmail("current@mail.com"))
+                .thenReturn(Optional.empty());
+
+        Throwable thrown = catchThrowable(() ->
+                connectionService.addConnectionByEmail("current@mail.com", "friend@mail.com")
+        );
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Utilisateur connecté introuvable");
+
+        verify(connectionRepository, never()).save(any());
+    }
+
+    //getUserConnectionsDto
     @Test
     public void shouldFindAllFriendsOfUser() {
 
@@ -134,5 +175,36 @@ public class ConnectionServiceTest {
         ConnectionDTO dto = friends.getFirst();
         assertThat(dto.id()).isEqualTo(2);
         assertThat(dto.username()).isEqualTo("friend");
+    }
+
+    @Test
+    public void shouldReturnEmptyListWhenUserHasNoConnections() {
+
+        AppUser user = new AppUser();
+        user.setIdUser(1);
+
+        when(userRepository.findByEmail("user@mail.com"))
+                .thenReturn(Optional.of(user));
+
+        when(connectionRepository.findConnectionsByUser(user))
+                .thenReturn(List.of());
+
+        List<ConnectionDTO> result = connectionService.getUserConnectionsDto("user@mail.com");
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUserNotFoundWhileFetchingConnections() {
+
+        when(userRepository.findByEmail("unknown@mail.com"))
+                .thenReturn(Optional.empty());
+
+        Throwable thrown = catchThrowable(() -> connectionService.getUserConnectionsDto("unknown@mail.com"));
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Utilisateur introuvable");
+
+        verify(connectionRepository, never()).findConnectionsByUser(any());
     }
 }
