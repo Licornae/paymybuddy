@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * Controller responsible for handling authentication-related views.
- *
  * This controller exposes the login page used by Spring Security
  * for user authentication.
  */

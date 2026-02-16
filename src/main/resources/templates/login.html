@@ -12,6 +12,9 @@
     <div class="register_messages">
         <div th:if="${success}" class="alert alert--success" th:text="${success}"></div>
         <div th:if="${error}" class="alert alert--error" th:text="${error}"></div>
+        <div th:if="${param.error}" class="alert alert--error" role="alert"aria-live="assertive">
+        Email ou mot de passe incorrect.
+        </div>
     </div>
     <div class="login_frame">
         <header>
