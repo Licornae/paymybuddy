@@ -1,4 +1,3 @@
-====================================================
 DESCRIPTION DU PROJET
 ====================================================
 
@@ -17,7 +16,6 @@ Le projet respecte les bonnes pratiques de développement :
 • Sécurisation de l’accès aux données
 • Respect des standards d’interface et d’accessibilité (WCAG)
 
-====================================================
 MODÈLE PHYSIQUE DE DONNÉES (MPD)
 ====================================================
 
