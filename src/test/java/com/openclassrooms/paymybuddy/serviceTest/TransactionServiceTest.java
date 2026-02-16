@@ -33,6 +33,7 @@ public class TransactionServiceTest {
     @InjectMocks
     private TransactionService transactionService;
 
+    //createTransaction
     @Test
     public void shouldCreateTransactionWhenValid() {
 
@@ -46,8 +47,7 @@ public class TransactionServiceTest {
 
         when(userRepository.findById(1)).thenReturn(Optional.of(sender));
         when(userRepository.findById(2)).thenReturn(Optional.of(receiver));
-        when(connectionRepository.existsByUserAndFriend(sender, receiver))
-                .thenReturn(true);
+        when(connectionRepository.existsByUserAndFriend(sender, receiver)).thenReturn(true);
 
         when(transactionRepository.save(any(Transaction.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -71,9 +71,8 @@ public class TransactionServiceTest {
                 transactionService.createTransaction(1, 2, -10.0, "Invalid")
         );
 
-        assertThat(thrown)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Le montant doit-être supérieur à 0€");
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Le montant doit être supérieur à 0€");
     }
 
     @Test
@@ -83,9 +82,8 @@ public class TransactionServiceTest {
                 transactionService.createTransaction(1, 2, 0, "Invalid")
         );
 
-        assertThat(thrown)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Le montant doit-être supérieur à 0€");
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Le montant doit être supérieur à 0€");
     }
 
     @Test
@@ -106,11 +104,28 @@ public class TransactionServiceTest {
                 transactionService.createTransaction(1, 2, 50.0, "Payment")
         );
 
-        assertThat(thrown)
-                .isInstanceOf(IllegalStateException.class)
+        assertThat(thrown).isInstanceOf(IllegalStateException.class)
                 .hasMessage("Les utilisateurs ne sont pas amis");
     }
 
+    @Test
+    public void shouldThrowExceptionWhenDescriptionIsTooLong() {
+        int senderId = 1;
+        int receiverId = 2;
+        double amount = 10.0;
+
+        String longDescription = "bla".repeat(100);
+
+        Throwable thrown = catchThrowable(() ->
+                transactionService.createTransaction(senderId, receiverId, amount, longDescription)
+        );
+
+        assertThat(thrown)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("La description ne doit pas dépasser 200 caractères");
+    }
+
+    //getUserSentTransactions
     @Test
     public void shouldReturnSentTransactionsOfUser() {
 
@@ -132,26 +147,100 @@ public class TransactionServiceTest {
         List<Transaction> transactions = transactionService.getUserSentTransactions("user@mail.com");
 
         assertThat(transactions).hasSize(1);
-        assertThat(transactions.get(0).getReceiver().getUsername()).isEqualTo("friend");
-        assertThat(transactions.get(0).getDescription()).isEqualTo("Déjeuner");
-        assertThat(transactions.get(0).getAmount()).isEqualTo(15.0);
+        assertThat(transactions.getFirst().getReceiver().getUsername()).isEqualTo("friend");
+        assertThat(transactions.getFirst().getDescription()).isEqualTo("Déjeuner");
+        assertThat(transactions.getFirst().getAmount()).isEqualTo(15.0);
     }
 
     @Test
-    public void shouldThrowExceptionWhenDescriptionIsTooLong() {
-        int senderId = 1;
-        int receiverId = 2;
-        double amount = 10.0;
+    void shouldReturnEmptyListWhenNoTransactions() {
 
-        String longDescription = "bla".repeat(100);
+        AppUser user = new AppUser();
+        user.setEmail("user@mail.com");
 
-        Throwable thrown = catchThrowable(() ->
-                transactionService.createTransaction(senderId, receiverId, amount, longDescription)
-        );
+        when(userRepository.findByEmail("user@mail.com")).thenReturn(Optional.of(user));
+        when(transactionRepository.findTransactionsBySender(user)).thenReturn(List.of());
 
-        assertThat(thrown)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("La description ne doit pas dépasser 200 caractères");
+        List<Transaction> result = transactionService.getUserSentTransactions("user@mail.com");
+
+        assertThat(result).isEmpty();
     }
 
+
+    @Test
+    public void shouldThrowExceptionWhenFetchingTransactionsWithUnknownEmail() {
+
+        when(userRepository.findByEmail("unknown@mail.com")).thenReturn(Optional.empty());
+
+        Throwable thrown = catchThrowable(() -> transactionService.getUserSentTransactions("unknown@mail.com"));
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Utilisateur introuvable");
+
+        verify(transactionRepository, never()).findTransactionsBySender(any());
+    }
+
+    //getUserByEmail
+    @Test
+    public void shouldReturnUserByEmail() {
+
+        AppUser user = new AppUser();
+        user.setEmail("user@mail.com");
+
+        when(userRepository.findByEmail("user@mail.com")).thenReturn(Optional.of(user));
+
+        AppUser result = transactionService.getUserByEmail("user@mail.com");
+
+        assertThat(result).isEqualTo(user);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUserByEmailNotFound() {
+
+        when(userRepository.findByEmail("unknown@mail.com")).thenReturn(Optional.empty());
+
+        Throwable thrown = catchThrowable(() -> transactionService.getUserByEmail("unknown@mail.com"));
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Utilisateur introuvable");
+    }
+
+    //getUserSentTransactionsDto()
+    @Test
+    public void shouldReturnTransactionDtos() {
+
+        AppUser user = new AppUser();
+        user.setEmail("user@mail.com");
+
+        AppUser receiver = new AppUser();
+        receiver.setUsername("receiver");
+
+        Transaction transaction = new Transaction();
+        transaction.setSender(user);
+        transaction.setReceiver(receiver);
+        transaction.setDescription("Test");
+        transaction.setAmount(30.0);
+
+        when(userRepository.findByEmail("user@mail.com")).thenReturn(Optional.of(user));
+
+        when(transactionRepository.findTransactionsBySender(user)).thenReturn(List.of(transaction));
+
+        var result = transactionService.getUserSentTransactionsDto("user@mail.com");
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().receiver()).isEqualTo("receiver");
+        assertThat(result.getFirst().description()).isEqualTo("Test");
+        assertThat(result.getFirst().amount()).isEqualTo(30.0);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenFetchingDtoWithUnknownEmail() {
+
+        when(userRepository.findByEmail("unknown@mail.com")).thenReturn(Optional.empty());
+
+        Throwable thrown = catchThrowable(() -> transactionService.getUserSentTransactionsDto("unknown@mail.com"));
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Utilisateur introuvable");
+    }
 }

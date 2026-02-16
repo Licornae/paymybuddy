@@ -10,10 +10,8 @@ import java.util.List;
 
 /**
  * Repository interface for {@link Transaction} entities.
- *
  * This repository provides basic CRUD operations for managing transactions
  * in the database.
- *
  * Spring Data JPA automatically generates the implementation at runtime.
  */
 @Repository
