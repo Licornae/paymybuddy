@@ -4,8 +4,8 @@ DESCRIPTION DU PROJET
 Pay My Buddy est une application web développée en Java avec Spring Boot
 permettant aux utilisateurs :
 
-• de s’enregistrer via une adresse email unique
-• de se connecter de manière sécurisée
+<li>de s’enregistrer via une adresse email unique</li>
+<li>de se connecter de manière sécurisée</li>
 • d’ajouter des relations (amis)
 • d’effectuer des transactions d’argent entre utilisateurs
 • de consulter l’historique des transactions
