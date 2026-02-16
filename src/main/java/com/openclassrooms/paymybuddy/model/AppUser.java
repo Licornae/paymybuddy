@@ -6,7 +6,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 /**
  * Entity representing an application user.
- *
  * This class is mapped to the {@code app_user} table and contains
  * authentication and identification information for a user.
  */

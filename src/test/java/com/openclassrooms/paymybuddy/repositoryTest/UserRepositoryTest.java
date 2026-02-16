@@ -108,6 +108,12 @@ public class UserRepositoryTest {
     }
 
     @Test
+    public void shouldReturnFalseWhenEmailDoesNotExist() {
+        boolean exists = userRepository.existsByEmail("unknown@mail.com");
+        assertThat(exists).isFalse();
+    }
+
+    @Test
     public void shouldReturnTrueWhenUsernameExists() {
 
         AppUser user = new AppUser();

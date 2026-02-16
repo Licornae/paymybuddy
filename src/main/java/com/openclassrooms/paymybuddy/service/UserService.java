@@ -13,7 +13,6 @@ import com.openclassrooms.paymybuddy.model.AppUser;
 
 /**
  * Service class for managing user operations in the PayMyBuddy application.
- * 
  * Handles user registration, updates, retrieval, and deletion with validation
  * and security features including password encryption and uniqueness checks.
  */
@@ -54,12 +53,11 @@ public class UserService {
      * Registers a new user with the provided credentials.
      *
      * @param username the desired username
-     * @param email the user's email address
+     * @param email    the user's email address
      * @param password the user's password (will be encrypted)
-     * @return the newly created AppUser entity
      * @throws IllegalArgumentException if validation fails or username/email already exists
      */
-    public AppUser registerUser(String username, String email, String password) {
+    public void registerUser(String username, String email, String password) {
 
         validateUserData(username, email, password);
         checkUniqueness(username, email);
@@ -72,7 +70,7 @@ public class UserService {
 
         log.info("Registering new user with email={}", email);
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     /**
@@ -93,16 +91,14 @@ public class UserService {
 
     /**
      * Updates an existing user's profile information.
-     *
      * Allows partial updates of username, email, and password. Only non-blank
      * fields in the DTO will be updated.
      *
      * @param userId the ID of the user to update
-     * @param dto the user update data transfer object containing new values
-     * @return the updated AppUser entity
+     * @param dto    the user update data transfer object containing new values
      * @throws IllegalArgumentException if user not found or validation fails
      */
-    public AppUser updateUser(int userId, UserUpdateDTO dto) {
+    public void updateUser(int userId, UserUpdateDTO dto) {
         log.debug("Updating user id={}", userId);
 
         AppUser user = userRepository.findById(userId)
@@ -142,7 +138,7 @@ public class UserService {
             log.debug("Password updated for user id={}", userId);
         }
         log.info("User id={} successfully updated", userId);
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     private boolean hasText(String value) {
@@ -194,6 +190,11 @@ public class UserService {
             log.debug("Password validation failed: blank");
             throw new IllegalArgumentException("Mot de passe obligatoire");
         }
+        if (password.length() < 8) {
+            log.debug("Password validation failed: less than min length");
+            throw new IllegalArgumentException("Mot de passe trop court");
+        }
+
         if (password.length() > MAX_PASSWORD_LENGTH) {
             log.debug("Password validation failed: exceeds max length");
             throw new IllegalArgumentException("Mot de passe trop long");
@@ -226,19 +227,18 @@ public class UserService {
         log.trace("Checking uniqueness for username={}, email={}", username, email);
 
         if (userRepository.existsByUsername(username)) {
-            log.warn("Username already exists: {}", username);
+            log.warn("Username is not unique: {}", username);
             throw new IllegalArgumentException("Ce nom d'utilisateur existe déjà");
         }
 
         if (userRepository.existsByEmail(email)) {
-            log.warn("Email already exists: {}", email);
+            log.warn("Email is not unique: {}", email);
             throw new IllegalArgumentException("L'email existe déjà");
         }
     }
 
     /**
      * Deletes a user and all associated data.
-     *
      * Removes the user along with their connections and transactions
      * (both as sender and receiver).
      *

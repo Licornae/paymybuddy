@@ -100,18 +100,6 @@ public class UserServiceTest {
         verify(userRepository, never()).save(any());
     }
 
-    @Test
-    public void shouldThrowExceptionWhenUsernameTooLong() {
-
-        String longUsername = "bla".repeat(51);
-
-        Throwable thrown = catchThrowable(() -> userService.registerUser(longUsername, "mail@mail.com", "password"));
-
-        assertThat(thrown).isInstanceOf(IllegalArgumentException.class).hasMessage("Le nom d'utilisateur ne doit pas dépasser 50 caractères");
-
-        verify(userRepository, never()).save(any());
-    }
-
     //Get user
 
     @Test
@@ -196,7 +184,7 @@ public class UserServiceTest {
     //Delete
 
     @Test
-    void shouldDeleteUserAndRelatedData() {
+    public void shouldDeleteUserAndRelatedData() {
 
         AppUser user = new AppUser();
 
@@ -209,5 +197,115 @@ public class UserServiceTest {
         verify(transactionRepository).deleteBySender(user);
         verify(transactionRepository).deleteByReceiver(user);
         verify(userRepository).delete(user);
+    }
+
+    //Validate Username
+    @Test
+    public void shouldThrowExceptionWhenUsernameIsNull() {
+
+        Throwable thrown = catchThrowable(() -> userService.registerUser(null, "mail@mail.com", "password"));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Nom d'utilisateur obligatoire");
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUsernameIsBlank() {
+
+        Throwable thrown = catchThrowable(() -> userService.registerUser("   ", "mail@mail.com", "password"));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Nom d'utilisateur obligatoire");
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUsernameTooLong_register() {
+
+        String longUsername = "bla".repeat(20);
+
+        Throwable thrown = catchThrowable(() -> userService.registerUser(longUsername, "mail@mail.com", "password"));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Le nom d'utilisateur ne doit pas dépasser 50 caractères");
+
+        verify(userRepository, never()).save(any());
+    }
+
+
+    //Validate Email
+    @Test
+    public void shouldThrowExceptionWhenEmailIsNull() {
+
+        Throwable thrown = catchThrowable(() -> userService.registerUser("user", null, "password"));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Email obligatoire");
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenEmailIsBlank() {
+
+        Throwable thrown = catchThrowable(() -> userService.registerUser("user", "   ", "password"));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Email obligatoire");
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenEmailTooLong() {
+
+        String longEmail = "bla".repeat(20);
+
+        Throwable thrown = catchThrowable(() -> userService.registerUser("user", longEmail, "password"));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Email trop long");
+
+        verify(userRepository, never()).save(any());
+    }
+
+    //Validate password
+
+    @Test
+    public void shouldThrowExceptionWhenPasswordIsNull() {
+
+        Throwable thrown = catchThrowable(() -> userService.registerUser("user", "mail@mail.com", null));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Mot de passe obligatoire");
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenPasswordIsBlank() {
+
+        Throwable thrown = catchThrowable(() -> userService.registerUser("user", "mail@mail.com", "   "));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Mot de passe obligatoire");
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenPasswordTooLong() {
+
+        String longPassword = "bla".repeat(90);
+
+        Throwable thrown = catchThrowable(() -> userService.registerUser("user", "mail@mail.com", longPassword));
+
+        assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Mot de passe trop long");
+
+        verify(userRepository, never()).save(any());
     }
 }
