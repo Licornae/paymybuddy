@@ -5,15 +5,12 @@ import java.util.Objects;
 
 /**
  * Composite primary key class for the {@link Connection} entity.
- *
  * This class represents the unique identity of a connection between two users.
  * The identity is defined by the combination of:
  * - the identifier of the user
  * - the identifier of the connected friend
- *
  * It is used by JPA through the {@code @IdClass} mechanism to map
  * a composite primary key based on foreign keys.
- *
  * This class complies with JPA requirements:
  * - implements {@link Serializable}
  * - provides a no-argument constructor

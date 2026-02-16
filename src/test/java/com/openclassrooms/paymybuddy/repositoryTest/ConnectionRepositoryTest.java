@@ -45,7 +45,8 @@ public class ConnectionRepositoryTest {
 
         Connection saved = connectionRepository.save(connection);
 
-        assertThat(connectionRepository.count()).isEqualTo(1);
+        assertThat(saved.getUser().getUsername()).isEqualTo("user");
+        assertThat(saved.getFriend().getUsername()).isEqualTo("friend");
     }
 
     @Test
@@ -78,5 +79,61 @@ public class ConnectionRepositoryTest {
         );
 
         assertThat(connectionRepository.findById(id)).isPresent();
+    }
+
+    @Test
+    public void shouldReturnTrueIfConnectionExists() {
+
+        AppUser user = new AppUser();
+        user.setUsername("user");
+        user.setEmail("user@mail.com");
+        user.setPassword("pass");
+        user.setRole("USER");
+        user = userRepository.save(user);
+
+        AppUser friend = new AppUser();
+        friend.setUsername("friend");
+        friend.setEmail("friend@mail.com");
+        friend.setPassword("pass");
+        friend.setRole("USER");
+        friend = userRepository.save(friend);
+
+        Connection connection = new Connection();
+        connection.setUser(user);
+        connection.setFriend(friend);
+        connectionRepository.save(connection);
+
+        boolean exists = connectionRepository.existsByUserAndFriend(user, friend);
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    public void shouldDeleteConnectionsByUser() {
+
+        AppUser user = new AppUser();
+        user.setUsername("user");
+        user.setEmail("user@mail.com");
+        user.setPassword("pass");
+        user.setRole("USER");
+        user = userRepository.save(user);
+
+        AppUser friend = new AppUser();
+        friend.setUsername("friend");
+        friend.setEmail("friend@mail.com");
+        friend.setPassword("pass");
+        friend.setRole("USER");
+        friend = userRepository.save(friend);
+
+        Connection connection = new Connection();
+        connection.setUser(user);
+        connection.setFriend(friend);
+        connectionRepository.save(connection);
+
+        assertThat(connectionRepository.count()).isEqualTo(1);
+
+        connectionRepository.deleteByUser(user);
+
+        assertThat(connectionRepository.count()).isZero();
     }
 }

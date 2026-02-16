@@ -9,10 +9,8 @@ import java.util.List;
 
 /**
  * Repository interface for managing {@link Connection} entities.
- *
  * This repository provides basic CRUD operations for {@code Connection}
  * entities identified by a composite primary key represented by {@link ConnectionId}.
- *
  * The composite key is based on the identifiers of the
  * {@code user} and the {@code friend}.
  */
