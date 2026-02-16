@@ -6,15 +6,16 @@ permettant aux utilisateurs :
 
 <li>de s’enregistrer via une adresse email unique</li>
 <li>de se connecter de manière sécurisée</li>
-• d’ajouter des relations (amis)
-• d’effectuer des transactions d’argent entre utilisateurs
-• de consulter l’historique des transactions
+<li>d’ajouter des relations (amis)</li>
+<li>d’effectuer des transactions d’argent entre utilisateurs</li>
+<li>de consulter l’historique des transactions</li>
 
 Le projet respecte les bonnes pratiques de développement :
-• Architecture en couches (Controller / Service / Repository)
-• Gestion des transactions
-• Sécurisation de l’accès aux données
-• Respect des standards d’interface et d’accessibilité (WCAG)
+
+<li> Architecture en couches (Controller / Service / Repository))</li>
+<li>Gestion des transactionss</li>
+<li>Sécurisation de l’accès aux données</li>
+<li>Respect des standards d’interface et d’accessibilité (WCAG)</li>
 
 MODÈLE PHYSIQUE DE DONNÉES (MPD)
 ====================================================
