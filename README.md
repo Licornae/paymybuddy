@@ -10,7 +10,7 @@ permettant aux utilisateurs :
 <li>d’effectuer des transactions d’argent entre utilisateurs</li>
 <li>de consulter l’historique des transactions</li>
 
-Le projet respecte les bonnes pratiques de développement :
+<p>Le projet respecte les bonnes pratiques de développement :</p>
 
 <li> Architecture en couches (Controller / Service / Repository))</li>
 <li>Gestion des transactionss</li>
