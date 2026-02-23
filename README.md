@@ -20,7 +20,7 @@ permettant aux utilisateurs :
 MODÈLE PHYSIQUE DE DONNÉES (MPD)
 ====================================================
 
-<img width="707" height="318" alt="MPD" src="https://github.com/user-attachments/assets/b85aaf9f-823b-4cd4-8615-90bd5168139c" />
+<img width="730" height="327" alt="MPD correct" src="https://github.com/user-attachments/assets/87477a5c-3487-44d2-a305-8dd44f1e32b0" />
 
 COUCHE DAL / RÉFÉRENTIEL
 ====================================================
