@@ -14,7 +14,10 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -52,7 +55,8 @@ public class SecurityIntegrationTest {
     @Test
     @WithMockUser
     public void shouldLogoutAndRedirectToLogin() throws Exception {
-        mockMvc.perform(get("/logout")).andExpect(status().is3xxRedirection())
+        mockMvc.perform(post("/logout").with(csrf()))
+                .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
     }
 }

@@ -60,3 +60,10 @@
 .appBar__navItem.active {
     color: var(--color-button);
 }
+
+.logoutBtn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
